@@ -12,36 +12,45 @@ from Scripts.camera import bind_cam, get_cam_frame
 ## MAIN CONFIG ## 
 MAX_INPUT_THRESHOLD_X = 0.8      # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
 MAX_INPUT_THRESHOLD_Y = 0.8      # The ratio of frameDimensions:windowDimensions at which mouse y coord is maxed to edges
-MAX_FPS = 60                     # The FPS cap of the main loop
 IMAGE_REDUCTION_SCALE = 4        # Size = 1/n * size
+MAX_FPS = 60                     # The FPS cap of the main loop
 CAM_INDEX = 0                    # The index of the camera to get input from
 
 
 ## MAIN
 def main():
 
-    ## PYGAME CONFIG ##
+    ## CONFIG ##
     SHOW_IMAGE_CAPTURE = True        # Whether to render the motion capture input to the screen
     WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
     WINDOW_FLAGS = 0                 # The flags to create the PyGame window with
     # ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
+    ## Open webcam and bind input
+    cam = bind_cam(CAM_INDEX)
+
     ## Init PyGame
     py.init()
     py.mixer.quit()
+    clock = py.time.Clock()
     DISPLAY_INFO = py.display.Info()
     MONITOR_WIDTH = DISPLAY_INFO.current_w 
     MONITOR_HEIGHT = DISPLAY_INFO.current_h
     MONITOR_DIMENSIONS = (MONITOR_WIDTH, MONITOR_HEIGHT)
-    CLOCK = py.time.Clock()
+    print(f"Monitor dimensions (px): [{MONITOR_WIDTH}, {MONITOR_HEIGHT}]")
+    CAMERA_WIDTH = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
+    CAMERA_HEIGHT = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    CAMERA_DIMENSIONS = (CAMERA_WIDTH, CAMERA_HEIGHT)
+    print(f"Camera dimensions (px): [{CAMERA_WIDTH}, {CAMERA_HEIGHT}]")
+    WINDOW_WIDTH = CAMERA_WIDTH / IMAGE_REDUCTION_SCALE
+    WINDOW_HEIGHT = CAMERA_HEIGHT / IMAGE_REDUCTION_SCALE
+    WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
+    print(f"Window dimensions (px): [{WINDOW_WIDTH}, {WINDOW_HEIGHT}]")
 
     ## Init PyGame window
     if SHOW_IMAGE_CAPTURE:
+        print(f"Creating PyGame window with dimensions (px): [{MONITOR_WIDTH}, {MONITOR_HEIGHT}]")
         py.display.set_caption(WINDOW_NAME)
-        WINDOW_WIDTH = MONITOR_WIDTH / IMAGE_REDUCTION_SCALE
-        WINDOW_HEIGHT = MONITOR_HEIGHT / IMAGE_REDUCTION_SCALE
-        WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
-        print(f"Creating PyGame window with dimensions: [{WINDOW_DIMENSIONS[0]}, {WINDOW_DIMENSIONS[1]}]")
         SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
 
     ## Configure pyautogui
@@ -50,9 +59,6 @@ def main():
 
     ## Init input object for PyGame inputs
     Input = InputObj()
-
-    ## Open webcam and bind input
-    cam = bind_cam(CAM_INDEX)
 
     ## Abstract mediapipe functions
     hands=mp.solutions.holistic.Holistic(static_image_mode=False)
@@ -78,7 +84,6 @@ def main():
 
         ## Get input from cam 
         frame = get_cam_frame(cam)
-        originalFrame = Image(frame.img, frame.format)
 
         ## Reduce image resolution for optimisation
         scale_frame(frame, 1 / IMAGE_REDUCTION_SCALE)
@@ -132,7 +137,7 @@ def main():
             py.display.update()
 
         ## Limit framerate
-        CLOCK.tick(MAX_FPS)
+        clock.tick(MAX_FPS)
 
     ## Quit PyGame
     py.quit()
