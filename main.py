@@ -27,24 +27,24 @@ SCREEN = py.display.set_mode(WINDOW_DIMENSIONS)
 ## MAIN
 def main():
 
-    ## SETUP
+    ## Init input object
     Input = InputObj()
 
     ## MAIN LOOP
     run = True
     while run:
 
-        ## FILL SCREEN TO CLEAR - Not always necessary 
+        ## Clear screen
         SCREEN.fill((0,0,0))
 
-        ## 'GET' MOUSE & KEYBOARD INPUT FROM USER
+        ## Get input
         Input.handleGettingInput()
         if Input.quitButtonPressed:
             run = False
         if Input.keys[py.K_ESCAPE]:
             run = False
 
-        ## UPDATE DISPLAY
+        ## Update display
         clock.tick(MAX_FPS)
         py.display.update() 
 
