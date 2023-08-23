@@ -2,6 +2,7 @@
 import cv2
 import pygame as py
 import numpy as np
+from Scripts.formatting import ImgFormat, Image
 
 
 ## GETS CURRENT FRAME FROM CAMERA AND RETURNS AS cv2 frame
@@ -28,30 +29,19 @@ def getCamFrame(camera):
 
 
 ## CONVERTS THE GIVEN FRAME TO A PYGAME SURFACE
-def frameToPygameSurf(frame, colourModification=cv2.COLOR_BGR2RGB):
-    """
-    Converts the given frame to a pygame surface\n
-
-    PARAMETERS\n
-    1 [frame]              - The cv2 frame that will be operated on\n
-    2 [colourModification] - The cv2 colour bit modification required (default BGR to RGB) - PyGame requires RGB\n
-
-    RETURNS\n
-    1 - The PyGame surface of the given cv2 frame\n
-    """
+def frame_to_pygame_surface(frame: Image) -> py.Surface:
 
     ## CONVERT COLOUR FORMAT TO MATCH PYGAME SURFACE
-    if colourModification != None:
-        frame = cv2.cvtColor(frame, colourModification)
+    frame.convert_to(ImgFormat.RGB)
 
     ## RECTIFY IMAGE ORIENTATION
-    frame = np.rot90(frame)
+    frame.img = np.rot90(frame.img)
 
     ## CREATE PYGAME SURFACE FROM OPENCV FRAME
-    frame = py.surfarray.make_surface(frame)
+    surf = py.surfarray.make_surface(frame.img)
 
     ## RETURN
-    return frame
+    return surf
 
 
 ## SCALES THE FRAME USING THE GIVEN MULTIPLIER
@@ -118,23 +108,3 @@ def bindCam(camIndex):
         print("DONE")
     
     return cam
-
-
-
-
-
-
-
-
-## GETS CURRENT FRAME FROM CAMERA AND RETURNS AS PYGAME SURFACE
-def OLD_getCamFrame(color,camera):
-    retval,frame=camera.read()
-    frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-    if not color:
-        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-        frame=cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
-    frame=np.rot90(frame)
-    frame=py.surfarray.make_surface(frame)
-
-    ## RETURN
-    return frame

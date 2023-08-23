@@ -5,9 +5,13 @@ import mediapipe as mp
 import pyautogui
 from os.path import abspath
 from Scripts.input_obj import InputObj
+from Scripts.formatting import Image, ImgFormat
 from Scripts.setup_funcs import set_CWD_to_file
-from Scripts.camera import bindCam, getCamFrame, frameToPygameSurf
+from Scripts.camera import bindCam, getCamFrame, frame_to_pygame_surface
 
+
+## MAIN CONFIG ## 
+SHOW_IMAGE_CAPTURE = True
 
 ## PYGAME CONFIG ##
 WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
@@ -27,8 +31,27 @@ pyautogui.FAILSAFE = False           # Disable hotcorner program exit failsafe -
 set_CWD_to_file(absolutePath=abspath(__file__))
 
 
+##
 mpHands=mp.solutions.hands
 mpDrawing=mp.solutions.drawing_utils
+
+
+## Renders the given hand points over the given frame
+def overlay_hands(frame: Image, handPoints) -> None:
+
+    ## Convert format to required
+    originalFormat = frame.format
+    frame.convert_to(ImgFormat.BGR)
+
+    ## Add overlay
+    if handPoints.multi_hand_landmarks:
+        for hand_landmarks in handPoints.multi_hand_landmarks:
+            mpDrawing.draw_landmarks(frame.img, hand_landmarks, connections=mpHands.HAND_CONNECTIONS)
+            print(hand_landmarks)
+
+    ## Convert format back
+    frame.convert_to(originalFormat)
+
 
 
 ## MAIN
@@ -37,12 +60,15 @@ def main():
     ## Init PyGame
     py.init()
     displayInfo = py.display.Info()
-    py.display.set_caption(WINDOW_NAME)
-    CLOCK = py.time.Clock()
-    WINDOW_WIDTH = displayInfo.current_w 
-    WINDOW_HEIGHT = displayInfo.current_h
-    WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
-    SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
+    MONITOR_WIDTH = displayInfo.current_w 
+    MONITOR_HEIGHT = displayInfo.current_h
+    if SHOW_IMAGE_CAPTURE:
+        py.display.set_caption(WINDOW_NAME)
+        CLOCK = py.time.Clock()
+        WINDOW_WIDTH = MONITOR_WIDTH / 2
+        WINDOW_HEIGHT = MONITOR_HEIGHT / 2
+        WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
+        SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
 
     ## Init input object for PyGame inputs
     Input = InputObj()
@@ -54,44 +80,60 @@ def main():
     run = True
     while run:
 
-        ## Clear screen
-        SCREEN.fill((0,0,0))
-
-        ## Get input
+        ## Get input from keyboard and mouse
         Input.handleGettingInput()
+
+        ## Handle exit case
         if Input.quitButtonPressed or Input.keys[py.K_ESCAPE]:
             run = False
 
         ## Get input from cam 
-        frame = getCamFrame(cam)
+        frame = Image(getCamFrame(cam), ImgFormat.BGR)
+
+        ## Reduce image resolution for optimisation
+        ## TODO
 
         ## Convert to RGB
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame.convert_to(ImgFormat.RGB)
         results = mpHands.Hands(max_num_hands=2, 
                                 min_detection_confidence=0.5,
-                                min_tracking_confidence=0.5).process(frame)
+                                min_tracking_confidence=0.5).process(frame.img)
         
-        ## Convert to BGR
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                mpDrawing.draw_landmarks(frame, hand_landmarks, connections=mpHands.HAND_CONNECTIONS)
+        # ##
+        # if SHOW_IMAGE_CAPTURE:
+        #     overlay_hands(frame, results)
 
-        # outSurf = frameToPygameSurf(results, colourModification=None)
-        cv2.imshow('test', frame)
+        if results.multi_hand_landmarks:
+            for hand in results.multi_hand_landmarks:
+                for point in hand:
+                    print(point)
 
         ## Move mouse
-        # pyautogui.moveTo(300, 300)
+        pyautogui.moveTo(300, 300)
 
-        ## Render to screen surface
-        # SCREEN.blit(outSurf, (0, 0))
+        if SHOW_IMAGE_CAPTURE:
 
-        ## Update display
+            ## Add hands overlay
+            overlay_hands(frame, results)
+
+            ## Convert to PyGame surface
+            frame.convert_to(ImgFormat.RGB)
+            outSurf = frame_to_pygame_surface(frame)
+
+            # Render to screen surface
+            SCREEN.blit(outSurf, (0, 0))
+
+            ## Update display
+            py.display.update()
+
+        ## Limit framerate
         CLOCK.tick(MAX_FPS)
-        py.display.update()
 
     ## Quit PyGame
     py.quit()
+
+    ## Free camera
+    cam.release()
 
 
 ## RUN
