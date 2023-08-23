@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import pygame as py
+
 
 ## ENUM TO DISCRIMINATE FORMAT TYPES
 class ImgFormat:
@@ -8,6 +10,7 @@ class ImgFormat:
     BGR  = 2
     def __init__(self, format: 'ImgFormat'):
         self.format = format
+
 
 ## IMAGE CLASS TO HOLD IMAGE AND FORMAT
 class Image:
@@ -64,3 +67,17 @@ class Image:
         return
         
 
+## CONVERTS THE GIVEN FRAME TO A PYGAME SURFACE
+def frame_to_pygame_surface(frame: Image) -> py.Surface:
+
+    ## CONVERT COLOUR FORMAT TO MATCH PYGAME SURFACE
+    frame.convert_to(ImgFormat.RGB)
+
+    ## RECTIFY IMAGE ORIENTATION
+    frame.img = np.rot90(frame.img)
+
+    ## CREATE PYGAME SURFACE FROM OPENCV FRAME
+    surf = py.surfarray.make_surface(frame.img)
+
+    ## RETURN
+    return surf

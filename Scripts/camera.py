@@ -6,42 +6,29 @@ from Scripts.formatting import ImgFormat, Image
 
 
 ## GETS CURRENT FRAME FROM CAMERA AND RETURNS AS cv2 frame
-def get_cam_frame(camera):
+def get_cam_frame(cam: cv2.VideoCapture) -> None:
     """
     Gets the current frame from the given camera\n
 
     PARAMETERS\n
-    1 [camera] - The cv2 camera that the frame will be extracted from\n
+    1 [cam] - The cv2 camera that the frame will be extracted from\n
 
     RETURNS\n
     1 - The cv2 frame extracted from the camera\n
     """
 
     ## READ IN CAMERA FRAME
-    success, frame = camera.read()
+    success, frame = cam.read()
     
+    ## WRAP IN IMAGE CLASS
+    frame = Image(frame, ImgFormat.BGR)
+
     ## PRINT ERROR STATEMENT IF NOT SUCCESSFUL
     if not success:
         print("ERROR: Couldn't get frame from camera")
 
     ## RETURN
     return frame
-
-
-## CONVERTS THE GIVEN FRAME TO A PYGAME SURFACE
-def frame_to_pygame_surface(frame: Image) -> py.Surface:
-
-    ## CONVERT COLOUR FORMAT TO MATCH PYGAME SURFACE
-    frame.convert_to(ImgFormat.RGB)
-
-    ## RECTIFY IMAGE ORIENTATION
-    frame.img = np.rot90(frame.img)
-
-    ## CREATE PYGAME SURFACE FROM OPENCV FRAME
-    surf = py.surfarray.make_surface(frame.img)
-
-    ## RETURN
-    return surf
 
 
 ## SCALES THE FRAME USING THE GIVEN MULTIPLIER
@@ -52,7 +39,7 @@ def scale_frame(frame: Image, scaleModifier: float) -> None:
 
 
 ## RETURNS THE DIMENSIONS OF THE CAMERA FEED FRAMES
-def get_cam_feed_dimensions(cam):
+def get_cam_feed_dimensions(cam: cv2.VideoCapture) -> tuple[int, int]:
     """
     PARAMETERS\n
     1 [cam] - The cv2 camera from which to get video feed dimensions \n
@@ -82,7 +69,7 @@ def get_cam_feed_dimensions(cam):
 
 
 ## BIND INPUT FROM CAM
-def bind_cam(camIndex):
+def bind_cam(camIndex: int) -> cv2.VideoCapture:
     
     print("\nConnecting to camera... ", end="")
     cam = cv2.VideoCapture(camIndex)

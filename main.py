@@ -5,9 +5,9 @@ import mediapipe as mp
 import pyautogui
 from os.path import abspath
 from Scripts.input_obj import InputObj
-from Scripts.formatting import Image, ImgFormat
+from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface
 from Scripts.setup_funcs import set_CWD_to_file
-from Scripts.camera import bind_cam, get_cam_frame, frame_to_pygame_surface
+from Scripts.camera import bind_cam, get_cam_frame
 
 
 ## MAIN CONFIG ## 
@@ -69,7 +69,7 @@ def main():
             run = False
 
         ## Get input from cam 
-        frame = Image(get_cam_frame(cam), ImgFormat.BGR)
+        frame = get_cam_frame(cam)
 
         ## Reduce image resolution for optimisation
         ## TODO
