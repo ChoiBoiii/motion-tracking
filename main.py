@@ -74,48 +74,39 @@ def main():
         ## Reduce image resolution for optimisation
         ## TODO
 
-        ## Convert to RGB
+        ## Process frame
         frame.convert_to(ImgFormat.RGB)
-        # results = mpHands.Hands(max_num_hands=2, 
-        #                         min_detection_confidence=0.5,
-        #                         min_tracking_confidence=0.5).process(frame.img)
-        
         results = hands.process(frame.img)
 
+        ## Process results
         if results.left_hand_landmarks:
-            landmarks = results.left_hand_landmarks.landmark
-            keypointPos = []
-            for landmark in landmarks:
-                # Acquire x, y but don't forget to convert to integer.
-                x = int(landmark.x * frame.img.shape[1])
-                y = int(landmark.y * frame.img.shape[0])
-                # Annotate landmarks or do whatever you want.
-                cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
-                keypointPos.append((landmark.x, landmark.y))
+            leftKeypoints = []
+            leftKeypointPixelPos = []
+            for landmark in results.left_hand_landmarks.landmark:
+                pixelPos = (int(landmark.x * frame.img.shape[1]), int(landmark.y * frame.img.shape[0]))
+                leftKeypointPixelPos.append(pixelPos)
+                leftKeypoints.append((landmark.x, landmark.y))
         if results.right_hand_landmarks:
-            landmarks = results.right_hand_landmarks.landmark
-            keypointPos = []
-            for landmark in landmarks:
-                # Acquire x, y but don't forget to convert to integer.
-                x = int(landmark.x * frame.img.shape[1])
-                y = int(landmark.y * frame.img.shape[0])
-                # Annotate landmarks or do whatever you want.
-                cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
-                keypointPos.append((landmark.x, landmark.y))
-
-        # if results.multi_hand_landmarks:
-        #     for hand in results.multi_hand_landmarks:
-        #         for point in hand:
-        #             print(point)
+            rightKeypoints = []
+            rightKeypointPixelPos = []
+            for landmark in results.right_hand_landmarks.landmark:
+                pixelPos = (int(landmark.x * frame.img.shape[1]), int(landmark.y * frame.img.shape[0]))
+                rightKeypointPixelPos.append(pixelPos)
+                rightKeypoints.append((landmark.x, landmark.y))
 
         ## Move mouse
         pyautogui.moveTo(300, 300)
 
         if SHOW_IMAGE_CAPTURE:
 
-            # ## Add hands overlay
-            # overlay_hands(frame, results)
-
+            ## Render keypoints
+            if results.left_hand_landmarks:
+                for x, y in leftKeypointPixelPos:
+                    cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
+            if results.right_hand_landmarks:
+                for x, y in rightKeypointPixelPos:
+                    cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
+                    
             ## Convert to PyGame surface
             frame.convert_to(ImgFormat.RGB)
             outSurf = frame_to_pygame_surface(frame)
