@@ -1,36 +1,44 @@
 ## IMPORT MODULES
 import os
+import cv2
 import pygame as py
 from Scripts.inputObj import InputObj
 from Scripts.setupFuncs import set_CWD_to_file
+from Scripts.camera import bindCam, getCamFrame
 
 
 ## CONFIG ##
-WINDOW_NAME = 'Motion Capture'
-WINDOW_DIMENSIONS = (1000, 700)
-MAX_FPS = 30
-WINDOW_WIDTH, WINDOW_HEIGHT = WINDOW_DIMENSIONS
+WINDOW_NAME = 'Motion Capture'       # The title of the PyGame window
+WINDOW_DIMENSIONS = (1000, 700)      # Dimensions of the PyGame window in pixels. Format: [x, y]
+MAX_FPS = 30                         # The FPS cap of the main loop
+CAM_INDEX = 0                        # The index of the camera to get input from
+WINDOW_WIDTH = WINDOW_DIMENSIONS[0]  # The width of the PyGame window in pixels
+WINDOW_HEIGHT = WINDOW_DIMENSIONS[1] # The height of the PyGame window in pixels
+WINDOW_FLAGS = 0                     # The flags to create the PyGame window with
+# ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
 ## MAKE WKDIR RELATIVE TO THIS SCRIPT ##
 set_CWD_to_file(absolutePath=os.path.abspath(__file__))
-
-## INIT PYGAME ##
-py.init()
-py.display.set_caption(WINDOW_NAME)
-clock = py.time.Clock()
-
-## INIT SCREEN ## 
-SCREEN = py.display.set_mode(WINDOW_DIMENSIONS)
-# py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
 
 ## MAIN
 def main():
 
-    ## Init input object
+    ## Init PyGame
+    py.init()
+    py.display.set_caption(WINDOW_NAME)
+    clock = py.time.Clock()
+
+    ## Init PyGame screen
+    SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
+
+    ## Init input object for PyGame inputs
     Input = InputObj()
 
-    ## MAIN LOOP
+    ## Open webcam and bind input
+    cam = bindCam(CAM_INDEX)
+
+    ## Main loop
     run = True
     while run:
 
@@ -48,7 +56,7 @@ def main():
         clock.tick(MAX_FPS)
         py.display.update() 
 
-    ## QUIT PYGAME
+    ## Quit PyGame
     py.quit()
 
 
