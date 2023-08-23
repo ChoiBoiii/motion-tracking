@@ -11,7 +11,7 @@ from Scripts.camera import bind_cam, get_cam_frame, frame_to_pygame_surface
 
 
 ## MAIN CONFIG ## 
-SHOW_IMAGE_CAPTURE = True
+SHOW_IMAGE_CAPTURE = True        # Whether to render the motion capture input to the screen
 
 ## PYGAME CONFIG ##
 WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
