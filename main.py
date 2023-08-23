@@ -9,32 +9,22 @@ from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_
 from Scripts.camera import bind_cam, get_cam_frame
 
 
-## CONTROL CONFIG ##
+## MAIN CONFIG ## 
 MAX_INPUT_THRESHOLD_X = 0.8      # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
 MAX_INPUT_THRESHOLD_Y = 0.8      # The ratio of frameDimensions:windowDimensions at which mouse y coord is maxed to edges
-
-## MAIN CONFIG ## 
-IMAGE_REDUCTION_SCALE = 4        # Size = 1/n * size
-
-## PYGAME CONFIG ##
-WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
 MAX_FPS = 60                     # The FPS cap of the main loop
-WINDOW_FLAGS = 0                 # The flags to create the PyGame window with
-# ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
-
-## CV2 CONFIG ##
+IMAGE_REDUCTION_SCALE = 4        # Size = 1/n * size
 CAM_INDEX = 0                    # The index of the camera to get input from
-
-## PYAUTOGUI CONFIG ##
-pyautogui.PAUSE = 0              # Pause in seconds after calls to pyautogui - Freezes whole program
-pyautogui.FAILSAFE = False       # Disable hotcorner program exit failsafe - WARNING: Can make it impossible to exit script
 
 
 ## MAIN
 def main():
 
-    ## Whether to render the motion capture input to the screen
-    SHOW_IMAGE_CAPTURE = True       
+    ## PYGAME CONFIG ##
+    SHOW_IMAGE_CAPTURE = True        # Whether to render the motion capture input to the screen
+    WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
+    WINDOW_FLAGS = 0                 # The flags to create the PyGame window with
+    # ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
     ## Init PyGame
     py.init()
@@ -44,6 +34,8 @@ def main():
     MONITOR_HEIGHT = DISPLAY_INFO.current_h
     MONITOR_DIMENSIONS = (MONITOR_WIDTH, MONITOR_HEIGHT)
     CLOCK = py.time.Clock()
+
+    ## Init PyGame window
     if SHOW_IMAGE_CAPTURE:
         py.display.set_caption(WINDOW_NAME)
         WINDOW_WIDTH = MONITOR_WIDTH / IMAGE_REDUCTION_SCALE
@@ -51,6 +43,10 @@ def main():
         WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
         print(f"Creating PyGame window with dimensions: [{WINDOW_DIMENSIONS[0]}, {WINDOW_DIMENSIONS[1]}]")
         SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
+
+    ## Configure pyautogui
+    pyautogui.PAUSE = 0              # Pause in seconds after calls to pyautogui - Freezes whole program
+    pyautogui.FAILSAFE = False       # Disable hotcorner program exit failsafe - WARNING: Can make it impossible to exit script
 
     ## Init input object for PyGame inputs
     Input = InputObj()
