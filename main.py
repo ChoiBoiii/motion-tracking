@@ -31,23 +31,6 @@ pyautogui.FAILSAFE = False       # Disable hotcorner program exit failsafe - WAR
 set_CWD_to_file(absolutePath=abspath(__file__))
 
 
-## Renders the given hand points over the given frame
-def overlay_hands(frame: Image, handPoints) -> None:
-
-    ## Convert format to required
-    originalFormat = frame.format
-    frame.convert_to(ImgFormat.BGR)
-
-    ## Add overlay
-    if handPoints.multi_hand_landmarks:
-        for hand_landmarks in handPoints.multi_hand_landmarks:
-            mp.solutions.drawing_utils.draw_landmarks(frame.img, hand_landmarks, connections=mp.solutions.hands.HAND_CONNECTIONS)
-            print(hand_landmarks)
-
-    ## Convert format back
-    frame.convert_to(originalFormat)
-
-
 ## MAIN
 def main():
 
@@ -98,6 +81,7 @@ def main():
         #                         min_tracking_confidence=0.5).process(frame.img)
         
         results = hands.process(frame.img)
+
         if results.left_hand_landmarks:
             landmarks = results.left_hand_landmarks.landmark
             keypointPos = []
@@ -108,10 +92,16 @@ def main():
                 # Annotate landmarks or do whatever you want.
                 cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
                 keypointPos.append((landmark.x, landmark.y))
-            print(keypointPos)
-        # ##
-        # if SHOW_IMAGE_CAPTURE:
-        #     overlay_hands(frame, results)
+        if results.right_hand_landmarks:
+            landmarks = results.right_hand_landmarks.landmark
+            keypointPos = []
+            for landmark in landmarks:
+                # Acquire x, y but don't forget to convert to integer.
+                x = int(landmark.x * frame.img.shape[1])
+                y = int(landmark.y * frame.img.shape[0])
+                # Annotate landmarks or do whatever you want.
+                cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
+                keypointPos.append((landmark.x, landmark.y))
 
         # if results.multi_hand_landmarks:
         #     for hand in results.multi_hand_landmarks:
