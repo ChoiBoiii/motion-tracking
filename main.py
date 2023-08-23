@@ -1,6 +1,7 @@
 ## IMPORT MODULES
 import cv2
 import pygame as py
+import mediapipe as mp
 import pyautogui
 from os.path import abspath
 from Scripts.input_obj import InputObj
@@ -26,6 +27,10 @@ pyautogui.FAILSAFE = False           # Disable hotcorner program exit failsafe -
 set_CWD_to_file(absolutePath=abspath(__file__))
 
 
+mpHands=mp.solutions.hands
+mpDrawing=mp.solutions.drawing_utils
+
+
 ## MAIN
 def main():
 
@@ -43,7 +48,7 @@ def main():
     Input = InputObj()
 
     ## Open webcam and bind input
-    # cam = bindCam(CAM_INDEX)
+    cam = bindCam(CAM_INDEX)
 
     ## Main loop
     run = True
@@ -54,14 +59,26 @@ def main():
 
         ## Get input
         Input.handleGettingInput()
-        if Input.quitButtonPressed:
-            run = False
-        if Input.keys[py.K_ESCAPE]:
+        if Input.quitButtonPressed or Input.keys[py.K_ESCAPE]:
             run = False
 
         ## Get input from cam 
-        # frame = getCamFrame(cam)
-        # outSurf = frameToPygameSurf(frame, cv2.COLOR_BGR2RGB)
+        frame = getCamFrame(cam)
+
+        ## Convert to RGB
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = mpHands.Hands(max_num_hands=2, 
+                                min_detection_confidence=0.5,
+                                min_tracking_confidence=0.5).process(frame)
+        
+        ## Convert to BGR
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        if results.multi_hand_landmarks:
+            for hand_landmarks in results.multi_hand_landmarks:
+                mpDrawing.draw_landmarks(frame, hand_landmarks, connections=mpHands.HAND_CONNECTIONS)
+
+        # outSurf = frameToPygameSurf(results, colourModification=None)
+        cv2.imshow('test', frame)
 
         ## Move mouse
         # pyautogui.moveTo(300, 300)

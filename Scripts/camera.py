@@ -41,7 +41,8 @@ def frameToPygameSurf(frame, colourModification=cv2.COLOR_BGR2RGB):
     """
 
     ## CONVERT COLOUR FORMAT TO MATCH PYGAME SURFACE
-    frame = cv2.cvtColor(frame, colourModification)
+    if colourModification != None:
+        frame = cv2.cvtColor(frame, colourModification)
 
     ## RECTIFY IMAGE ORIENTATION
     frame = np.rot90(frame)
