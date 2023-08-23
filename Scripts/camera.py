@@ -6,7 +6,7 @@ from Scripts.formatting import ImgFormat, Image
 
 
 ## GETS CURRENT FRAME FROM CAMERA AND RETURNS AS cv2 frame
-def get_cam_frame(cam: cv2.VideoCapture) -> None:
+def get_cam_frame(cam: cv2.VideoCapture) -> Image:
     """
     Gets the current frame from the given camera\n
 

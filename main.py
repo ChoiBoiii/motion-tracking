@@ -12,6 +12,7 @@ from Scripts.camera import bind_cam, get_cam_frame
 
 ## MAIN CONFIG ## 
 SHOW_IMAGE_CAPTURE = True        # Whether to render the motion capture input to the screen
+IMAGE_REDUCTION_SCALE = 4        # Size = 1/n * size
 
 ## PYGAME CONFIG ##
 WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
@@ -43,8 +44,8 @@ def main():
     CLOCK = py.time.Clock()
     if SHOW_IMAGE_CAPTURE:
         py.display.set_caption(WINDOW_NAME)
-        WINDOW_WIDTH = MONITOR_WIDTH
-        WINDOW_HEIGHT = MONITOR_HEIGHT
+        WINDOW_WIDTH = MONITOR_WIDTH / IMAGE_REDUCTION_SCALE
+        WINDOW_HEIGHT = MONITOR_HEIGHT / IMAGE_REDUCTION_SCALE
         WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
         SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
 
@@ -70,10 +71,11 @@ def main():
 
         ## Get input from cam 
         frame = get_cam_frame(cam)
+        originalFrame = Image(frame.img, frame.format)
 
         ## Reduce image resolution for optimisation
-        scale_frame(frame, 0.5)
-        
+        scale_frame(frame, 1 / IMAGE_REDUCTION_SCALE)
+
         ## Process frame
         frame.convert_to(ImgFormat.RGB)
         results = hands.process(frame.img)
@@ -107,10 +109,10 @@ def main():
             ## Render keypoints
             if results.left_hand_landmarks:
                 for x, y in leftKeypointPixelPos:
-                    cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
+                    cv2.circle(frame.img, (x, y), int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0, 255, 0), -1)
             if results.right_hand_landmarks:
                 for x, y in rightKeypointPixelPos:
-                    cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
+                    cv2.circle(frame.img, (x, y), int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0, 255, 0), -1)
 
             ## Convert to PyGame surface
             frame.convert_to(ImgFormat.RGB)
