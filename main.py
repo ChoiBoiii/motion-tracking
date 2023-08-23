@@ -5,7 +5,7 @@ import mediapipe as mp
 import pyautogui
 from os.path import abspath
 from Scripts.input_obj import InputObj
-from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface
+from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_frame
 from Scripts.setup_funcs import set_CWD_to_file
 from Scripts.camera import bind_cam, get_cam_frame
 
@@ -72,8 +72,8 @@ def main():
         frame = get_cam_frame(cam)
 
         ## Reduce image resolution for optimisation
-        ## TODO
-
+        scale_frame(frame, 0.5)
+        
         ## Process frame
         frame.convert_to(ImgFormat.RGB)
         results = hands.process(frame.img)
@@ -95,7 +95,11 @@ def main():
                 rightKeypoints.append((landmark.x, landmark.y, landmark.z))
 
         ## Move mouse
-        pyautogui.moveTo(300, 300)
+        if results.right_hand_landmarks:
+            rightSum = [sum(i) for i in zip(*rightKeypoints)]
+            newX = MONITOR_WIDTH * (1 - (rightSum[0] / len(rightKeypoints)))
+            newY = MONITOR_HEIGHT * (rightSum[1] / len(rightKeypoints))
+            pyautogui.moveTo(newX, newY)
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
@@ -107,7 +111,7 @@ def main():
             if results.right_hand_landmarks:
                 for x, y in rightKeypointPixelPos:
                     cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
-                    
+
             ## Convert to PyGame surface
             frame.convert_to(ImgFormat.RGB)
             outSurf = frame_to_pygame_surface(frame)
