@@ -5,21 +5,22 @@ from Scripts.inputObj import InputObj
 from Scripts.setupFuncs import set_CWD_to_file
 
 
-## GLOBALS / INITIALISATION ##
-WINDOW_NAME = 'ENTER NAME'
-X, Y = 1000, 700 # = user_input_screen_dimensions(0.6)
-MAX_FPS = 60 
-  # Replace at "clock.tick(MAX_FPS)"
+## CONFIG ##
+WINDOW_NAME = 'Motion Capture'
+WINDOW_DIMENSIONS = (1000, 700)
+MAX_FPS = 30
+WINDOW_WIDTH, WINDOW_HEIGHT = WINDOW_DIMENSIONS
 
+## MAKE WKDIR RELATIVE TO THIS SCRIPT ##
+set_CWD_to_file(absolutePath=os.path.abspath(__file__))
+
+## INIT PYGAME ##
 py.init()
 py.display.set_caption(WINDOW_NAME)
 clock = py.time.Clock()
 
-## MAKE WORKING DIRECTORY RELATIVE TO FILE
-set_CWD_to_file(absolutePath=os.path.abspath(__file__))
-
-## INITIALISE SCREEN
-SCREEN = py.display.set_mode((X, Y))
+## INIT SCREEN ## 
+SCREEN = py.display.set_mode(WINDOW_DIMENSIONS)
 # py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
 
