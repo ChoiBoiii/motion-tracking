@@ -85,14 +85,14 @@ def main():
             for landmark in results.left_hand_landmarks.landmark:
                 pixelPos = (int(landmark.x * frame.img.shape[1]), int(landmark.y * frame.img.shape[0]))
                 leftKeypointPixelPos.append(pixelPos)
-                leftKeypoints.append((landmark.x, landmark.y))
+                leftKeypoints.append((landmark.x, landmark.y, landmark.z))
         if results.right_hand_landmarks:
             rightKeypoints = []
             rightKeypointPixelPos = []
             for landmark in results.right_hand_landmarks.landmark:
                 pixelPos = (int(landmark.x * frame.img.shape[1]), int(landmark.y * frame.img.shape[0]))
                 rightKeypointPixelPos.append(pixelPos)
-                rightKeypoints.append((landmark.x, landmark.y))
+                rightKeypoints.append((landmark.x, landmark.y, landmark.z))
 
         ## Move mouse
         pyautogui.moveTo(300, 300)

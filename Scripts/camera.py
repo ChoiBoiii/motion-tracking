@@ -31,13 +31,6 @@ def get_cam_frame(cam: cv2.VideoCapture) -> None:
     return frame
 
 
-## SCALES THE FRAME USING THE GIVEN MULTIPLIER
-def scale_frame(frame: Image, scaleModifier: float) -> None:
-    frame.img = cv2.resize(frame.img, None, 
-                           fx=scaleModifier, fy=scaleModifier, 
-                           interpolation=cv2.INTER_AREA)
-
-
 ## RETURNS THE DIMENSIONS OF THE CAMERA FEED FRAMES
 def get_cam_feed_dimensions(cam: cv2.VideoCapture) -> tuple[int, int]:
     """

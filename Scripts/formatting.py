@@ -81,3 +81,12 @@ def frame_to_pygame_surface(frame: Image) -> py.Surface:
 
     ## RETURN
     return surf
+
+
+## SCALES THE FRAME USING THE GIVEN MULTIPLIER
+def scale_frame(frame: Image, scaleModifier: float) -> None:
+    frame.img = cv2.resize(frame.img, None, 
+                           fx=scaleModifier, fy=scaleModifier, 
+                           interpolation=cv2.INTER_AREA)
+
+
