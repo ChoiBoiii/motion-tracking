@@ -11,7 +11,7 @@ from Scripts.camera import bindCam, getCamFrame, frame_to_pygame_surface
 
 
 ## MAIN CONFIG ## 
-SHOW_IMAGE_CAPTURE = False
+SHOW_IMAGE_CAPTURE = True
 
 ## PYGAME CONFIG ##
 WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
@@ -41,7 +41,7 @@ def overlay_hands(frame: Image, handPoints) -> None:
     ## Add overlay
     if handPoints.multi_hand_landmarks:
         for hand_landmarks in handPoints.multi_hand_landmarks:
-            mpDrawing.draw_landmarks(frame.img, hand_landmarks, connections=mpHands.HAND_CONNECTIONS)
+            mp.solutions.drawing_utils.draw_landmarks(frame.img, hand_landmarks, connections=mp.solutions.hands.HAND_CONNECTIONS)
             print(hand_landmarks)
 
     ## Convert format back
@@ -60,8 +60,8 @@ def main():
     CLOCK = py.time.Clock()
     if SHOW_IMAGE_CAPTURE:
         py.display.set_caption(WINDOW_NAME)
-        WINDOW_WIDTH = MONITOR_WIDTH / 2
-        WINDOW_HEIGHT = MONITOR_HEIGHT / 2
+        WINDOW_WIDTH = MONITOR_WIDTH
+        WINDOW_HEIGHT = MONITOR_HEIGHT
         WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
         SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
 
@@ -72,8 +72,7 @@ def main():
     cam = bindCam(CAM_INDEX)
 
     ## Abstract mediapipe functions
-    mpHands=mp.solutions.hands
-    mpDrawing=mp.solutions.drawing_utils
+    hands=mp.solutions.holistic.Holistic(static_image_mode=False)
 
     ## Main loop
     run = True
@@ -94,26 +93,38 @@ def main():
 
         ## Convert to RGB
         frame.convert_to(ImgFormat.RGB)
-        results = mpHands.Hands(max_num_hands=2, 
-                                min_detection_confidence=0.5,
-                                min_tracking_confidence=0.5).process(frame.img)
+        # results = mpHands.Hands(max_num_hands=2, 
+        #                         min_detection_confidence=0.5,
+        #                         min_tracking_confidence=0.5).process(frame.img)
         
+        results = hands.process(frame.img)
+        if results.left_hand_landmarks:
+            landmarks = results.left_hand_landmarks.landmark
+            keypointPos = []
+            for landmark in landmarks:
+                # Acquire x, y but don't forget to convert to integer.
+                x = int(landmark.x * frame.img.shape[1])
+                y = int(landmark.y * frame.img.shape[0])
+                # Annotate landmarks or do whatever you want.
+                cv2.circle(frame.img, (x, y), 5, (0, 255, 0), -1)
+                keypointPos.append((landmark.x, landmark.y))
+            print(keypointPos)
         # ##
         # if SHOW_IMAGE_CAPTURE:
         #     overlay_hands(frame, results)
 
-        if results.multi_hand_landmarks:
-            for hand in results.multi_hand_landmarks:
-                for point in hand:
-                    print(point)
+        # if results.multi_hand_landmarks:
+        #     for hand in results.multi_hand_landmarks:
+        #         for point in hand:
+        #             print(point)
 
         ## Move mouse
         pyautogui.moveTo(300, 300)
 
         if SHOW_IMAGE_CAPTURE:
 
-            ## Add hands overlay
-            overlay_hands(frame, results)
+            # ## Add hands overlay
+            # overlay_hands(frame, results)
 
             ## Convert to PyGame surface
             frame.convert_to(ImgFormat.RGB)
