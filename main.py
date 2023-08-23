@@ -3,8 +3,8 @@ import cv2
 import pygame as py
 import pyautogui
 from os.path import abspath
-from Scripts.inputObj import InputObj
-from Scripts.setupFuncs import set_CWD_to_file
+from Scripts.input_obj import InputObj
+from Scripts.setup_funcs import set_CWD_to_file
 from Scripts.camera import bindCam, getCamFrame, frameToPygameSurf
 
 
@@ -33,11 +33,10 @@ def main():
     py.init()
     displayInfo = py.display.Info()
     py.display.set_caption(WINDOW_NAME)
-    clock = py.time.Clock()
+    CLOCK = py.time.Clock()
     WINDOW_WIDTH = displayInfo.current_w 
     WINDOW_HEIGHT = displayInfo.current_h
     WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
-
     SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
 
     ## Init input object for PyGame inputs
@@ -65,14 +64,14 @@ def main():
         # outSurf = frameToPygameSurf(frame, cv2.COLOR_BGR2RGB)
 
         ## Move mouse
-        pyautogui.moveTo(300, 300)
+        # pyautogui.moveTo(300, 300)
 
         ## Render to screen surface
         # SCREEN.blit(outSurf, (0, 0))
 
         ## Update display
-        clock.tick(MAX_FPS)
-        py.display.update() 
+        CLOCK.tick(MAX_FPS)
+        py.display.update()
 
     ## Quit PyGame
     py.quit()
