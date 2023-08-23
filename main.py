@@ -7,7 +7,7 @@ from os.path import abspath
 from Scripts.input_obj import InputObj
 from Scripts.formatting import Image, ImgFormat
 from Scripts.setup_funcs import set_CWD_to_file
-from Scripts.camera import bindCam, getCamFrame, frame_to_pygame_surface
+from Scripts.camera import bind_cam, get_cam_frame, frame_to_pygame_surface
 
 
 ## MAIN CONFIG ## 
@@ -52,7 +52,7 @@ def main():
     Input = InputObj()
 
     ## Open webcam and bind input
-    cam = bindCam(CAM_INDEX)
+    cam = bind_cam(CAM_INDEX)
 
     ## Abstract mediapipe functions
     hands=mp.solutions.holistic.Holistic(static_image_mode=False)
@@ -69,7 +69,7 @@ def main():
             run = False
 
         ## Get input from cam 
-        frame = Image(getCamFrame(cam), ImgFormat.BGR)
+        frame = Image(get_cam_frame(cam), ImgFormat.BGR)
 
         ## Reduce image resolution for optimisation
         ## TODO
@@ -97,6 +97,7 @@ def main():
         ## Move mouse
         pyautogui.moveTo(300, 300)
 
+        ## Render image capture
         if SHOW_IMAGE_CAPTURE:
 
             ## Render keypoints

@@ -6,7 +6,7 @@ from Scripts.formatting import ImgFormat, Image
 
 
 ## GETS CURRENT FRAME FROM CAMERA AND RETURNS AS cv2 frame
-def getCamFrame(camera):
+def get_cam_frame(camera):
     """
     Gets the current frame from the given camera\n
 
@@ -45,36 +45,21 @@ def frame_to_pygame_surface(frame: Image) -> py.Surface:
 
 
 ## SCALES THE FRAME USING THE GIVEN MULTIPLIER
-def scaleFrame(frame, scaleModifier):
-    """
-    Converts the given frame to a pygame surface\n
-
-    PARAMETERS\n
-    1 [frame]         - The cv2 frame that will be operated on\n
-    2 [scaleModifier] - The scale to which the current dimensions will be modified\n
-
-    RETURNS\n
-    1 - The resized cv2 frame\n
-    """
-
-    ## RESIZE THE GIVEN FRAME
-    frame = cv2.resize(frame, None, fx=scaleModifier, fy=scaleModifier, interpolation=cv2.INTER_AREA)
-
-    ## RETURN
-    return frame
+def scale_frame(frame: Image, scaleModifier: float) -> None:
+    frame.img = cv2.resize(frame.img, None, 
+                           fx=scaleModifier, fy=scaleModifier, 
+                           interpolation=cv2.INTER_AREA)
 
 
 ## RETURNS THE DIMENSIONS OF THE CAMERA FEED FRAMES
-def camFeedDimensions(cam):
+def get_cam_feed_dimensions(cam):
     """
-    Converts the given frame to a pygame surface\n
-
     PARAMETERS\n
-    1 [cam] - The cv2 camera from which to get video feed dimensions\n
+    1 [cam] - The cv2 camera from which to get video feed dimensions \n
 
     RETURNS\n
-    1 - The width of the feed <int>\n
-    2 - The height of the feed <int>\n
+    1 - The width of the feed <int> \n
+    2 - The height of the feed <int> \n
     """
 
     ## Check if camera feed is open
@@ -90,14 +75,14 @@ def camFeedDimensions(cam):
     
     ## Print error statement
     else:
-        print("ERROR: Unable to get video feed dimensions -> Camera not opened")
+        print("ERROR: Unable to get video feed dimensions: Camera not opened.")
 
     ## Return 
     return width, height
 
 
 ## BIND INPUT FROM CAM
-def bindCam(camIndex):
+def bind_cam(camIndex):
     
     print("\nConnecting to camera... ", end="")
     cam = cv2.VideoCapture(camIndex)
