@@ -11,7 +11,7 @@ from Scripts.camera import bindCam, getCamFrame, frame_to_pygame_surface
 
 
 ## MAIN CONFIG ## 
-SHOW_IMAGE_CAPTURE = True
+SHOW_IMAGE_CAPTURE = False
 
 ## PYGAME CONFIG ##
 WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
@@ -20,20 +20,15 @@ WINDOW_FLAGS = 0 | py.NOFRAME    # The flags to create the PyGame window with
 # ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
 ## CV2 CONFIG ##
-CAM_INDEX = 0                        # The index of the camera to get input from
+CAM_INDEX = 0                    # The index of the camera to get input from
 
 ## PYAUTOGUI CONFIG ##
-pyautogui.PAUSE = 0                  # Pause in seconds after calls to pyautogui - Freezes whole program
-pyautogui.FAILSAFE = False           # Disable hotcorner program exit failsafe - WARNING: Can make it impossible to exit script
+pyautogui.PAUSE = 0              # Pause in seconds after calls to pyautogui - Freezes whole program
+pyautogui.FAILSAFE = False       # Disable hotcorner program exit failsafe - WARNING: Can make it impossible to exit script
 
 
 ## MAKE WKDIR RELATIVE TO THIS SCRIPT ##
 set_CWD_to_file(absolutePath=abspath(__file__))
-
-
-##
-mpHands=mp.solutions.hands
-mpDrawing=mp.solutions.drawing_utils
 
 
 ## Renders the given hand points over the given frame
@@ -53,7 +48,6 @@ def overlay_hands(frame: Image, handPoints) -> None:
     frame.convert_to(originalFormat)
 
 
-
 ## MAIN
 def main():
 
@@ -62,9 +56,10 @@ def main():
     displayInfo = py.display.Info()
     MONITOR_WIDTH = displayInfo.current_w 
     MONITOR_HEIGHT = displayInfo.current_h
+    MONITOR_DIMENSIONS = (MONITOR_WIDTH, MONITOR_HEIGHT)
+    CLOCK = py.time.Clock()
     if SHOW_IMAGE_CAPTURE:
         py.display.set_caption(WINDOW_NAME)
-        CLOCK = py.time.Clock()
         WINDOW_WIDTH = MONITOR_WIDTH / 2
         WINDOW_HEIGHT = MONITOR_HEIGHT / 2
         WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -75,6 +70,10 @@ def main():
 
     ## Open webcam and bind input
     cam = bindCam(CAM_INDEX)
+
+    ## Abstract mediapipe functions
+    mpHands=mp.solutions.hands
+    mpDrawing=mp.solutions.drawing_utils
 
     ## Main loop
     run = True
