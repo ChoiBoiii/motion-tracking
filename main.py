@@ -4,7 +4,7 @@ import cv2
 import pygame as py
 from Scripts.inputObj import InputObj
 from Scripts.setupFuncs import set_CWD_to_file
-from Scripts.camera import bindCam, getCamFrame
+from Scripts.camera import bindCam, getCamFrame, frameToPygameSurf
 
 
 ## CONFIG ##
@@ -16,6 +16,7 @@ WINDOW_WIDTH = WINDOW_DIMENSIONS[0]  # The width of the PyGame window in pixels
 WINDOW_HEIGHT = WINDOW_DIMENSIONS[1] # The height of the PyGame window in pixels
 WINDOW_FLAGS = 0                     # The flags to create the PyGame window with
 # ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
+
 
 ## MAKE WKDIR RELATIVE TO THIS SCRIPT ##
 set_CWD_to_file(absolutePath=os.path.abspath(__file__))
@@ -51,6 +52,11 @@ def main():
             run = False
         if Input.keys[py.K_ESCAPE]:
             run = False
+
+        ##
+        frame = getCamFrame(cam)
+        outSurf = frameToPygameSurf(frame, cv2.COLOR_BGR2RGB)
+        SCREEN.blit(outSurf, (0, 0))
 
         ## Update display
         clock.tick(MAX_FPS)
