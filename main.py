@@ -52,8 +52,7 @@ def main():
     py.quit()
 
 
-
-## EXECUTE
+## RUN
 if __name__ == '__main__':
     main()
 
