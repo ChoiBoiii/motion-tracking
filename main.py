@@ -4,6 +4,7 @@ import cv2
 import pygame as py
 import mediapipe as mp
 import pyautogui
+from typing import Union
 from Scripts.input_handler import InputObj
 from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_frame
 from Scripts.camera import bind_cam, get_cam_frame
@@ -17,6 +18,29 @@ IMAGE_REDUCTION_SCALE = 4        # Size = 1/n * size
 MAX_FPS = 60                     # The FPS cap of the main loop
 CAM_INDEX = 0                    # The index of the camera to get input from
 
+
+## Render the keypoints from given meshes on the given pygame surface
+def render_hand_keypoints_on_pygame_surface(pygameSurface: py.Surface, handMeshes: Union[HandMesh, list[HandMesh]]) -> None:
+    '''
+    Renders the keypoints from the given hand meshes on the given pygame surface.
+    Mesh coordinates are interpreted as [0, 1] normalised coordinates, which are then
+    multiplied by the widht or heigh of the screen to give the pixel coordiate of the 
+    resulting dot render.
+    '''
+
+    ## Ensure hands are in a list
+    if type(handMeshes) == HandMesh:
+        handMeshes = [handMeshes]
+
+    ## Draw keypoints
+    surfWidth, surfHeight = pygameSurface.get_size()
+    for hand in handMeshes:
+        if hand:
+            for x, y, _ in hand.allKeypoints:
+                pxPos = (surfWidth * (1 - x), y * surfHeight)
+                if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
+                    if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
+                        py.draw.circle(pygameSurface, (0,255,0), pxPos, 3)
 
 ## MAIN
 def main():
@@ -130,19 +154,7 @@ def main():
             outSurf = frame_to_pygame_surface(frame)
 
             ## Draw keypoints
-            surfWidth, surfHeight = outSurf.get_size()
-            if leftHand:
-                for x, y, _ in leftHand.allKeypoints:
-                    pxPos = (surfWidth * (1 - x), y * surfHeight)
-                    if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
-                        if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
-                            py.draw.circle(outSurf, (0,255,0), pxPos, min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200 + 1)
-            if rightHand:
-                for x, y, _ in rightHand.allKeypoints:
-                    pxPos = (surfWidth * (1 - x), y * surfHeight)
-                    if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
-                        if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
-                            py.draw.circle(outSurf, (0,255,0), pxPos, min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200 + 1)
+            render_hand_keypoints_on_pygame_surface(outSurf, [leftHand, rightHand])
 
             ## Add max threshold visualiser
             py.draw.rect(outSurf, (255,255,0), 
