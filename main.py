@@ -115,24 +115,23 @@ def main():
         if rightHand:
 
             ## Move
-            monitorPos = hand_coord_to_monitor_coord(rightHand.get_palm_center(), MONITOR_DIMENSIONS)
-            pyautogui.moveTo(monitorPos[0], monitorPos[1])
+            mousePos = hand_coord_to_monitor_coord(rightHand.get_palm_center(), MONITOR_DIMENSIONS)
             
-
             if pinching_index(rightHand):
                 if not mouseDown:
                     pyautogui.click()
                     mouseDown = True
                     print("M1 Down")
-                pyautogui.dragTo(monitorPos[0], monitorPos[1], button='left')
+                # pyautogui.dragTo(mousePos[0], mousePos[1], button='left', duration=0)
                 # pyautogui.drag(newX - pyautogui.position()[0], newY - pyautogui.position()[1], button='left')
+                pyautogui.moveTo(mousePos[0], mousePos[1], duration=0)
             else:
                 if mouseDown:
                     # pyautogui.mouseUp()
                     mouseDown = False
                     print("M1 Up")
                 # pyautogui.moveTo(newX, newY)
-                pyautogui.move(monitorPos[0] - pyautogui.position()[0], monitorPos[1] - pyautogui.position()[1])
+                pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
