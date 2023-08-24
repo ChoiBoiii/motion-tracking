@@ -9,7 +9,7 @@ from Scripts.input_handler import InputObj
 from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_frame
 from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
-from Scripts.overlay import render_hand_keypoints_on_pygame_surface
+from Scripts.overlay import render_hand_keypoints_on_pygame_surface, render_max_threshold_on_pygame_surface
 
 
 ## MAIN CONFIG ## 
@@ -102,7 +102,7 @@ def main():
             rightHand = HandMesh.create_from_mediapipe_hand_mesh(results.right_hand_landmarks.landmark, HandType.RIGHT)
 
         ## Move mouse
-        if results.right_hand_landmarks:
+        if rightHand:
             rightSum = [sum(i) for i in zip(*rightHand.palm)]
             avgX = rightSum[0] / len(rightHand.palm)
             avgY = rightSum[1] / len(rightHand.palm)
@@ -123,10 +123,7 @@ def main():
             render_hand_keypoints_on_pygame_surface(outSurf, [leftHand, rightHand])
 
             ## Add max threshold visualiser
-            py.draw.rect(outSurf, (255,255,0), 
-                         (WINDOW_WIDTH / 2 * (1 - MAX_INPUT_THRESHOLD_X), WINDOW_HEIGHT / 2 * (1 - MAX_INPUT_THRESHOLD_Y), 
-                          WINDOW_WIDTH * MAX_INPUT_THRESHOLD_X, WINDOW_HEIGHT * MAX_INPUT_THRESHOLD_Y), 
-                          2)
+            render_max_threshold_on_pygame_surface(outSurf, MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
 
             ## Render to screen surface
             SCREEN.blit(outSurf, (0, 0))

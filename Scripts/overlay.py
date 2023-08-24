@@ -2,6 +2,7 @@ import pygame as py
 from typing import Union
 from Scripts.hands import HandMesh
 
+
 ## Render the keypoints from given meshes on the given pygame surface
 def render_hand_keypoints_on_pygame_surface(pygameSurface: py.Surface, handMeshes: Union[HandMesh, list[HandMesh]]) -> None:
     '''
@@ -24,4 +25,12 @@ def render_hand_keypoints_on_pygame_surface(pygameSurface: py.Surface, handMeshe
                 if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
                     if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
                         py.draw.circle(pygameSurface, (0,255,0), pxPos, 3)
-                        
+
+
+##
+def render_max_threshold_on_pygame_surface(pygameSurface: py.Surface, thresholdX: int, thresholdY: int) -> None:
+    surfWidth, surfHeight = pygameSurface.get_size()
+    py.draw.rect(pygameSurface, (255,255,0), 
+                    (surfWidth / 2 * (1 - thresholdX), surfHeight / 2 * (1 - thresholdY), 
+                    surfWidth * thresholdX, surfHeight * thresholdY), 2)
+
