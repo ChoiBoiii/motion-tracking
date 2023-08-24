@@ -76,7 +76,9 @@ def main():
     hands=mp.solutions.holistic.Holistic(static_image_mode=False)
 
     ## TEST
-    mouseDown = False
+    mouseDown1 = False
+    mouseDown2 = False
+    mouseDown3 = False
 
     ## Main loop
     run = True
@@ -118,20 +120,30 @@ def main():
             mousePos = hand_coord_to_monitor_coord(rightHand.get_palm_center(), MONITOR_DIMENSIONS)
             
             if pinching_index(rightHand):
-                if not mouseDown:
-                    pyautogui.click()
-                    mouseDown = True
-                    print("M1 Down")
+                if not mouseDown1:
+                    pyautogui.mouseDown()
+                    mouseDown1 = True
+                    print("Pinch   | Index")
                 # pyautogui.dragTo(mousePos[0], mousePos[1], button='left', duration=0)
                 # pyautogui.drag(newX - pyautogui.position()[0], newY - pyautogui.position()[1], button='left')
                 pyautogui.moveTo(mousePos[0], mousePos[1], duration=0)
             else:
-                if mouseDown:
-                    # pyautogui.mouseUp()
-                    mouseDown = False
-                    print("M1 Up")
+                if mouseDown1:
+                    pyautogui.mouseUp()
+                    mouseDown1 = False
+                    print("Unpinch | Index")
                 # pyautogui.moveTo(newX, newY)
                 pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
+
+            if pinching_middle(rightHand):
+                if not mouseDown2:
+                    mouseDown2 = True
+                    print("Pinch   | Middle")
+            else:
+                if mouseDown2:
+                    mouseDown2 = False
+                    print("Unpinch | Middle")
+            
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
