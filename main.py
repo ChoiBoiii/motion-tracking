@@ -96,22 +96,16 @@ def main():
         results = hands.process(frame.img)
         leftHand = None
         if results.left_hand_landmarks:
-            leftKeypoints = []
-            for landmark in results.left_hand_landmarks.landmark:
-                leftKeypoints.append((landmark.x, landmark.y, landmark.z))
-            leftHand = HandMesh.create_from_mediapipe_hand_mesh(leftKeypoints, handType=HandType.LEFT)
+            leftHand = HandMesh.create_from_mediapipe_hand_mesh(results.left_hand_landmarks.landmark, HandType.LEFT)
         rightHand = None
         if results.right_hand_landmarks:
-            rightKeypoints = []
-            for landmark in results.right_hand_landmarks.landmark:
-                rightKeypoints.append((landmark.x, landmark.y, landmark.z))
-            rightHand = HandMesh.create_from_mediapipe_hand_mesh(rightKeypoints, handType=HandType.RIGHT)
+            rightHand = HandMesh.create_from_mediapipe_hand_mesh(results.right_hand_landmarks.landmark, HandType.RIGHT)
 
         ## Move mouse
         if results.right_hand_landmarks:
             rightSum = [sum(i) for i in zip(*rightHand.allKeypoints)]
-            avgX = rightSum[0] / len(rightKeypoints)
-            avgY = rightSum[1] / len(rightKeypoints)
+            avgX = rightSum[0] / len(rightHand.allKeypoints)
+            avgY = rightSum[1] / len(rightHand.allKeypoints)
             adjustedX = 0.5 + (1 / MAX_INPUT_THRESHOLD_X * (avgX - 0.5))
             adjustedY = 0.5 + (1 / MAX_INPUT_THRESHOLD_Y * (avgY - 0.5))
             newX = MONITOR_WIDTH * (1 - adjustedX)

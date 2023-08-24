@@ -7,6 +7,7 @@ class HandType:
 ## Universal struct for any hand type
 class HandMesh:
 
+    ## Init instance
     def __init__(self, allKeypoints: list[float, float, float], 
                  palm: list[float, float, float], thumb: list[float, float, float], 
                  index: list[float, float, float], middle: list[float, float, float], 
@@ -21,7 +22,9 @@ class HandMesh:
         self.pinky = pinky
         self.type = type
 
-    def create_from_mediapipe_hand_mesh(handKeypoints, handType: HandType=None) -> 'HandMesh':
+    ## Create an instance using a list of points in the order given by mediapipe
+    @staticmethod
+    def create_from_point_list(handKeypoints, handType: HandType=None) -> 'HandMesh':
         palm=handKeypoints[0:3] + handKeypoints[5:6] + handKeypoints[9:10] + handKeypoints[13:14] + handKeypoints[17:18]
         return HandMesh(handKeypoints, 
                         palm=palm,
@@ -32,12 +35,13 @@ class HandMesh:
                         pinky=handKeypoints[18:21],
                         type=handType)
 
-## Converts the given landmarks into a hand mesh
-def convert_landmarks_to_hand_mesh(handLandmarks, handType: HandType=HandType.NONE) -> HandMesh:
-    leftKeypoints = []
-    for landmark in handLandmarks:
-        leftKeypoints.append((landmark.x, landmark.y, landmark.z))
-    return HandMesh.create_from_mediapipe_hand_mesh(leftKeypoints, handType=handType)
+    ## Converts the given landmarks into a hand mesh
+    @staticmethod
+    def create_from_mediapipe_hand_mesh(handLandmarks, handType: HandType=HandType.NONE) -> 'HandMesh':
+        keyPoints = []
+        for landmark in handLandmarks:
+            keyPoints.append((landmark.x, landmark.y, landmark.z))
+        return HandMesh.create_from_point_list(keyPoints, handType=handType)
         
 ## Extract hand meshes from given image
 # def get_hand_meshes_from_image() -> List[]
