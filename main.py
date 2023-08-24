@@ -1,15 +1,14 @@
 ## IMPORT MODULES
-import os
 import cv2
 import pygame as py
 import mediapipe as mp
 import pyautogui
-from typing import Union
 from Scripts.input_handler import InputObj
 from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_frame
 from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
 from Scripts.overlay import render_hand_keypoints_on_pygame_surface, render_max_threshold_on_pygame_surface
+from Scripts.window import create_window, destroy_window
 
 
 ## MAIN CONFIG ## 
@@ -52,9 +51,7 @@ def main():
 
     ## Init PyGame window
     if SHOW_IMAGE_CAPTURE:
-        print(f"Creating PyGame window with dimensions (px): [{MONITOR_WIDTH}, {MONITOR_HEIGHT}]")
-        py.display.set_caption(WINDOW_NAME)
-        SCREEN = py.display.set_mode(size=WINDOW_DIMENSIONS, flags=WINDOW_FLAGS)
+        SCREEN = create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
 
     ## Configure pyautogui
     pyautogui.PAUSE = 0              # Pause in seconds after calls to pyautogui - Freezes whole program
@@ -80,9 +77,7 @@ def main():
         ## Disable image capture preview
         if Input.keys[py.K_t] and not Input.prevKeys[py.K_t]:
             if SHOW_IMAGE_CAPTURE:
-                print("Destroying PyGame window")
-                py.display.quit()
-                py.display.init()
+                destroy_window()
             SHOW_IMAGE_CAPTURE = False
 
         ## Get input from cam 
