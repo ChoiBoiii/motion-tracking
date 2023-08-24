@@ -111,8 +111,10 @@ def main():
             rightSum = [sum(i) for i in zip(*rightKeypoints)]
             avgX = rightSum[0] / len(rightKeypoints)
             avgY = rightSum[1] / len(rightKeypoints)
-            newX = MONITOR_WIDTH * (1 - avgX) * (1 / MAX_INPUT_THRESHOLD_X)
-            newY = MONITOR_HEIGHT * avgY * (1 / MAX_INPUT_THRESHOLD_Y)
+            adjustedX = 0.5 + (1 / MAX_INPUT_THRESHOLD_X * (avgX - 0.5))
+            adjustedY = 0.5 + (1 / MAX_INPUT_THRESHOLD_Y * (avgY - 0.5))
+            newX = MONITOR_WIDTH * (1 - adjustedX)
+            newY = MONITOR_HEIGHT * adjustedY
             pyautogui.moveTo(newX, newY)
 
         ## Render image capture
