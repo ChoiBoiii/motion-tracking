@@ -7,6 +7,7 @@ import pyautogui
 from Scripts.input_handler import InputObj
 from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_frame
 from Scripts.camera import bind_cam, get_cam_frame
+from Scripts.hands import HandMesh, HandType
 
 
 ## MAIN CONFIG ## 
@@ -16,36 +17,6 @@ IMAGE_REDUCTION_SCALE = 4        # Size = 1/n * size
 MAX_FPS = 60                     # The FPS cap of the main loop
 CAM_INDEX = 0                    # The index of the camera to get input from
 
-
-##
-class HandType:
-    NONE = 0
-    LEFT = 1
-    RIGHT = 2
-
-##
-class HandMesh:
-
-    def __init__(self, allKeypoints, palm, thumb, index, middle, ring, pinky, type: HandType=None):
-        self.allKeypoints = allKeypoints
-        self.palm = palm
-        self.thumb = thumb
-        self.index = index
-        self.middle = middle
-        self.ring = ring
-        self.pinky = pinky
-        self.type = type
-
-    def create_from_mediapipe_hand_mesh(handKeypoints, handType: HandType=None) -> 'HandMesh':
-        palm=handKeypoints[0:3] + handKeypoints[5:6] + handKeypoints[9:10] + handKeypoints[13:14] + handKeypoints[17:18]
-        return HandMesh(handKeypoints, 
-                        palm=palm,
-                        thumb=handKeypoints[2:5],
-                        index=handKeypoints[6:9],
-                        middle=handKeypoints[10:13],
-                        ring=handKeypoints[14:17],
-                        pinky=handKeypoints[18:21],
-                        type=handType)
 
 ## MAIN
 def main():
@@ -163,11 +134,15 @@ def main():
             if leftHand:
                 for x, y, _ in leftHand.allKeypoints:
                     pxPos = (surfWidth * (1 - x), y * surfHeight)
-                    py.draw.circle(outSurf, (0,255,0), pxPos, min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200 + 1)
+                    if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
+                        if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
+                            py.draw.circle(outSurf, (0,255,0), pxPos, min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200 + 1)
             if rightHand:
                 for x, y, _ in rightHand.allKeypoints:
                     pxPos = (surfWidth * (1 - x), y * surfHeight)
-                    py.draw.circle(outSurf, (0,255,0), pxPos, min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200 + 1)
+                    if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
+                        if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
+                            py.draw.circle(outSurf, (0,255,0), pxPos, min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200 + 1)
 
             ## Add max threshold visualiser
             py.draw.rect(outSurf, (255,255,0), 
