@@ -103,9 +103,9 @@ def main():
 
         ## Move mouse
         if results.right_hand_landmarks:
-            rightSum = [sum(i) for i in zip(*rightHand.allKeypoints)]
-            avgX = rightSum[0] / len(rightHand.allKeypoints)
-            avgY = rightSum[1] / len(rightHand.allKeypoints)
+            rightSum = [sum(i) for i in zip(*rightHand.palm)]
+            avgX = rightSum[0] / len(rightHand.palm)
+            avgY = rightSum[1] / len(rightHand.palm)
             adjustedX = 0.5 + (1 / MAX_INPUT_THRESHOLD_X * (avgX - 0.5))
             adjustedY = 0.5 + (1 / MAX_INPUT_THRESHOLD_Y * (avgY - 0.5))
             newX = MONITOR_WIDTH * (1 - adjustedX)
@@ -135,7 +135,7 @@ def main():
             py.display.update()
 
         ## Limit framerate
-        clock.tick(MAX_FPS)
+        print(1000/clock.tick(MAX_FPS))
 
     ## Quit PyGame
     py.quit()
