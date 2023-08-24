@@ -97,19 +97,13 @@ def main():
         leftHand = None
         if results.left_hand_landmarks:
             leftKeypoints = []
-            leftKeypointPixelPos = []
             for landmark in results.left_hand_landmarks.landmark:
-                pixelPos = (int(landmark.x * CAMERA_WIDTH), int(landmark.y * CAMERA_HEIGHT))
-                leftKeypointPixelPos.append(pixelPos)
                 leftKeypoints.append((landmark.x, landmark.y, landmark.z))
             leftHand = HandMesh.create_from_mediapipe_hand_mesh(leftKeypoints, handType=HandType.LEFT)
         rightHand = None
         if results.right_hand_landmarks:
             rightKeypoints = []
-            rightKeypointPixelPos = []
             for landmark in results.right_hand_landmarks.landmark:
-                pixelPos = (int(landmark.x * CAMERA_WIDTH), int(landmark.y * CAMERA_HEIGHT))
-                rightKeypointPixelPos.append(pixelPos)
                 rightKeypoints.append((landmark.x, landmark.y, landmark.z))
             rightHand = HandMesh.create_from_mediapipe_hand_mesh(rightKeypoints, handType=HandType.RIGHT)
 
