@@ -76,9 +76,10 @@ def main():
     hands=mp.solutions.holistic.Holistic(static_image_mode=False)
 
     ## TEST
-    mouseDown1 = False
-    mouseDown2 = False
-    mouseDown3 = False
+    indexPiched = False
+    middlePinched = False
+    ringPinched = False
+    pinkyPinched = False
 
     ## Main loop
     run = True
@@ -120,29 +121,47 @@ def main():
             mousePos = hand_coord_to_monitor_coord(rightHand.get_palm_center(), MONITOR_DIMENSIONS)
             
             if pinching_index(rightHand):
-                if not mouseDown1:
+                if not indexPiched:
                     pyautogui.mouseDown()
-                    mouseDown1 = True
+                    indexPiched = True
                     print("Pinch   | Index")
                 # pyautogui.dragTo(mousePos[0], mousePos[1], button='left', duration=0)
                 # pyautogui.drag(newX - pyautogui.position()[0], newY - pyautogui.position()[1], button='left')
                 pyautogui.moveTo(mousePos[0], mousePos[1], duration=0)
             else:
-                if mouseDown1:
+                if indexPiched:
                     pyautogui.mouseUp()
-                    mouseDown1 = False
+                    indexPiched = False
                     print("Unpinch | Index")
                 # pyautogui.moveTo(newX, newY)
                 pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
 
             if pinching_middle(rightHand):
-                if not mouseDown2:
-                    mouseDown2 = True
+                if not middlePinched:
+                    middlePinched = True
                     print("Pinch   | Middle")
             else:
-                if mouseDown2:
-                    mouseDown2 = False
+                if middlePinched:
+                    middlePinched = False
                     print("Unpinch | Middle")
+
+            if pinching_ring(rightHand):
+                if not ringPinched:
+                    ringPinched = True
+                    print("Pinch   | Ring")
+            else:
+                if ringPinched:
+                    ringPinched = False
+                    print("Unpinch | Ring")
+
+            if pinching_pinky(rightHand):
+                if not pinkyPinched:
+                    pinkyPinched = True
+                    print("Pinch   | Pinky")
+            else:
+                if pinkyPinched:
+                    pinkyPinched = False
+                    print("Unpinch | Pinky")
             
 
         ## Render image capture

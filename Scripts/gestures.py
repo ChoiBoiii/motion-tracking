@@ -28,9 +28,16 @@ def pinching_middle(handMesh: HandMesh) -> bool:
     dist = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
     return dist < PINCH_DIST_INIT_THRESHOLD
 
+def pinching_ring(handMesh: HandMesh) -> bool:
+    x1, y1, z1 = handMesh.ring[2]
+    x2, y2, z2 = handMesh.thumb[2]
+    dx, dy, dz = (x1 - x2), (y1 - y2), (z1 - z2)
+    dist = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
+    return dist < PINCH_DIST_INIT_THRESHOLD
 
-def pinching_ring():
-    pass
-
-def pinching_pinky():
-    pass
+def pinching_pinky(handMesh: HandMesh) -> bool:
+    x1, y1, z1 = handMesh.pinky[2]
+    x2, y2, z2 = handMesh.thumb[2]
+    dx, dy, dz = (x1 - x2), (y1 - y2), (z1 - z2)
+    dist = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
+    return dist < PINCH_DIST_INIT_THRESHOLD
