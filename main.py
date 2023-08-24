@@ -126,7 +126,7 @@ def main():
             leftKeypoints = []
             leftKeypointPixelPos = []
             for landmark in results.left_hand_landmarks.landmark:
-                pixelPos = (int(landmark.x * frame.img.shape[1]), int(landmark.y * frame.img.shape[0]))
+                pixelPos = (int(landmark.x * CAMERA_WIDTH), int(landmark.y * CAMERA_HEIGHT))
                 leftKeypointPixelPos.append(pixelPos)
                 leftKeypoints.append((landmark.x, landmark.y, landmark.z))
             leftHand = HandMesh.create_from_mediapipe_hand_mesh(leftKeypoints, handType=HandType.LEFT)
@@ -135,7 +135,7 @@ def main():
             rightKeypoints = []
             rightKeypointPixelPos = []
             for landmark in results.right_hand_landmarks.landmark:
-                pixelPos = (int(landmark.x * frame.img.shape[1]), int(landmark.y * frame.img.shape[0]))
+                pixelPos = (int(landmark.x * CAMERA_WIDTH), int(landmark.y * CAMERA_HEIGHT))
                 rightKeypointPixelPos.append(pixelPos)
                 rightKeypoints.append((landmark.x, landmark.y, landmark.z))
             rightHand = HandMesh.create_from_mediapipe_hand_mesh(rightKeypoints, handType=HandType.RIGHT)
@@ -155,16 +155,20 @@ def main():
         if SHOW_IMAGE_CAPTURE:
 
             ## Render keypoints
-            if results.left_hand_landmarks:
-                for x, y in leftKeypointPixelPos:
-                    cv2.circle(frame.img, (x, y), int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0,255,0), -1)
-            if results.right_hand_landmarks:
-                for x, y in rightKeypointPixelPos:
-                    cv2.circle(frame.img, (x, y), int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0,255,0), -1)
+            if leftHand:
+                for x, y, _ in leftHand.allKeypoints:
+                    pixelPos = (int(x * frame.img.shape[1]), int(y * frame.img.shape[0]))
+                    cv2.circle(frame.img, pixelPos, int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0,255,0), -1)
+            if rightHand:
+                for x, y, _ in rightHand.allKeypoints:
+                    pixelPos = (int(x * frame.img.shape[1]), int(y * frame.img.shape[0]))
+                    cv2.circle(frame.img, pixelPos, int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0,255,0), -1)
 
             ## Convert to PyGame surface
             frame.convert_to(ImgFormat.RGB)
             outSurf = frame_to_pygame_surface(frame)
+
+            ## Draw keypoints
 
             ## Add max threshold visualiser
             py.draw.rect(outSurf, (255,255,0), 
