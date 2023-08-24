@@ -98,6 +98,8 @@ def main():
 
         ## Move mouse
         if rightHand:
+
+            ## Move
             rightSum = [sum(i) for i in zip(*rightHand.palm)]
             avgX = rightSum[0] / len(rightHand.palm)
             avgY = rightSum[1] / len(rightHand.palm)
@@ -106,6 +108,14 @@ def main():
             newX = MONITOR_WIDTH * (1 - adjustedX)
             newY = MONITOR_HEIGHT * adjustedY
             pyautogui.moveTo(newX, newY)
+            
+            ## Click
+            x1, y1, z1 = rightHand.index[2]
+            x2, y2, z2 = rightHand.thumb[2]
+            dx, dy, dz = x1 - x2, y1 - y2, z1 - z2
+            dist = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
+            if dist < 0.025:
+                pyautogui.click()
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
@@ -127,7 +137,7 @@ def main():
             py.display.update()
 
         ## Limit framerate
-        print(1000/clock.tick(MAX_FPS))
+        print("FPS:", 1000/clock.tick(MAX_FPS))
 
     ## Quit PyGame
     py.quit()
