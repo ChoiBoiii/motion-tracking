@@ -7,7 +7,7 @@ from Scripts.input_handler import InputObj
 from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_frame
 from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
-from Scripts.overlay import render_hand_keypoints_on_pygame_surface, render_max_threshold_on_pygame_surface
+from Scripts.overlay import render_hand_keypoints_on_pygame_surface, render_max_threshold_on_pygame_surface, render_mouse_coord_origin
 from Scripts.window import create_window, destroy_window
 from Scripts.gestures import pinching_index, pinching_middle, pinching_pinky, pinching_ring
 
@@ -144,7 +144,11 @@ def main():
             ## Draw keypoints
             render_hand_keypoints_on_pygame_surface(outSurf, [leftHand, rightHand])
 
-            ## Add max threshold visualiser
+            ## Draw mouse coord origin
+            if rightHand:
+                render_mouse_coord_origin(outSurf, rightHand)
+
+            ## Draw max threshold visualiser
             render_max_threshold_on_pygame_surface(outSurf, MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
 
             ## Render to screen surface
@@ -153,8 +157,8 @@ def main():
             ## Update display
             py.display.update()
 
-        ## Limit framerate
-        # print("FPS:", 1000/clock.tick(MAX_FPS))
+        # Limit framerate
+        clock.tick(MAX_FPS)
 
     ## Quit PyGame
     py.quit()
