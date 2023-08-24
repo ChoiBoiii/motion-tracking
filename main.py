@@ -17,6 +17,36 @@ MAX_FPS = 60                     # The FPS cap of the main loop
 CAM_INDEX = 0                    # The index of the camera to get input from
 
 
+##
+class HandType:
+    NONE = 0
+    LEFT = 1
+    RIGHT = 2
+
+##
+class HandMesh:
+
+    def __init__(self, allKeypoints, palm, thumb, index, middle, ring, pinky, type: HandType=None):
+        self.allKeypoints = allKeypoints
+        self.palm = palm
+        self.thumb = thumb
+        self.index = index
+        self.middle = middle
+        self.ring = ring
+        self.pinky = pinky
+        self.type = type
+
+    def create_from_mediapipe_hand_mesh(handKeypoints, handType: HandType=None) -> 'HandMesh':
+        palm=handKeypoints[0:3] + handKeypoints[5:6] + handKeypoints[9:10] + handKeypoints[13:14] + handKeypoints[17:18]
+        return HandMesh(handKeypoints, 
+                        palm=palm,
+                        thumb=handKeypoints[2:5],
+                        index=handKeypoints[6:9],
+                        middle=handKeypoints[10:13],
+                        ring=handKeypoints[14:17],
+                        pinky=handKeypoints[18:21],
+                        type=handType)
+
 ## MAIN
 def main():
 
@@ -91,6 +121,7 @@ def main():
         ## Process frame
         frame.convert_to(ImgFormat.RGB)
         results = hands.process(frame.img)
+        leftHand = None
         if results.left_hand_landmarks:
             leftKeypoints = []
             leftKeypointPixelPos = []
@@ -98,6 +129,8 @@ def main():
                 pixelPos = (int(landmark.x * frame.img.shape[1]), int(landmark.y * frame.img.shape[0]))
                 leftKeypointPixelPos.append(pixelPos)
                 leftKeypoints.append((landmark.x, landmark.y, landmark.z))
+            leftHand = HandMesh.create_from_mediapipe_hand_mesh(leftKeypoints, handType=HandType.LEFT)
+        rightHand = None
         if results.right_hand_landmarks:
             rightKeypoints = []
             rightKeypointPixelPos = []
@@ -105,10 +138,11 @@ def main():
                 pixelPos = (int(landmark.x * frame.img.shape[1]), int(landmark.y * frame.img.shape[0]))
                 rightKeypointPixelPos.append(pixelPos)
                 rightKeypoints.append((landmark.x, landmark.y, landmark.z))
+            rightHand = HandMesh.create_from_mediapipe_hand_mesh(rightKeypoints, handType=HandType.RIGHT)
 
         ## Move mouse
         if results.right_hand_landmarks:
-            rightSum = [sum(i) for i in zip(*rightKeypoints)]
+            rightSum = [sum(i) for i in zip(*rightHand.allKeypoints)]
             avgX = rightSum[0] / len(rightKeypoints)
             avgY = rightSum[1] / len(rightKeypoints)
             adjustedX = 0.5 + (1 / MAX_INPUT_THRESHOLD_X * (avgX - 0.5))
@@ -123,10 +157,10 @@ def main():
             ## Render keypoints
             if results.left_hand_landmarks:
                 for x, y in leftKeypointPixelPos:
-                    cv2.circle(frame.img, (x, y), int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0, 255, 0), -1)
+                    cv2.circle(frame.img, (x, y), int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0,255,0), -1)
             if results.right_hand_landmarks:
                 for x, y in rightKeypointPixelPos:
-                    cv2.circle(frame.img, (x, y), int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0, 255, 0), -1)
+                    cv2.circle(frame.img, (x, y), int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0,255,0), -1)
 
             ## Convert to PyGame surface
             frame.convert_to(ImgFormat.RGB)
