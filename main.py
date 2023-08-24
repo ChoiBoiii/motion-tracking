@@ -91,8 +91,6 @@ def main():
         ## Process frame
         frame.convert_to(ImgFormat.RGB)
         results = hands.process(frame.img)
-
-        ## Process results
         if results.left_hand_landmarks:
             leftKeypoints = []
             leftKeypointPixelPos = []
@@ -111,8 +109,10 @@ def main():
         ## Move mouse
         if results.right_hand_landmarks:
             rightSum = [sum(i) for i in zip(*rightKeypoints)]
-            newX = MONITOR_WIDTH * (1 - (rightSum[0] / len(rightKeypoints)))
-            newY = MONITOR_HEIGHT * (rightSum[1] / len(rightKeypoints))
+            avgX = rightSum[0] / len(rightKeypoints)
+            avgY = rightSum[1] / len(rightKeypoints)
+            newX = MONITOR_WIDTH * (1 - avgX) * (1 / MAX_INPUT_THRESHOLD_X)
+            newY = MONITOR_HEIGHT * avgY * (1 / MAX_INPUT_THRESHOLD_Y)
             pyautogui.moveTo(newX, newY)
 
         ## Render image capture
@@ -130,7 +130,13 @@ def main():
             frame.convert_to(ImgFormat.RGB)
             outSurf = frame_to_pygame_surface(frame)
 
-            # Render to screen surface
+            ## Add max threshold visualiser
+            py.draw.rect(outSurf, (255,255,0), 
+                         (WINDOW_WIDTH / 2 * (1 - MAX_INPUT_THRESHOLD_X), WINDOW_HEIGHT / 2 * (1 - MAX_INPUT_THRESHOLD_Y), 
+                          WINDOW_WIDTH * MAX_INPUT_THRESHOLD_X, WINDOW_HEIGHT * MAX_INPUT_THRESHOLD_Y), 
+                          2)
+
+            ## Render to screen surface
             SCREEN.blit(outSurf, (0, 0))
 
             ## Update display
