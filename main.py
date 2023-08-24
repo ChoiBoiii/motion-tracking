@@ -132,11 +132,14 @@ def main():
                     # pyautogui.mouseDown()
                     mouseDown = True
                     print("M1 Down")
+                pyautogui.dragTo(newX, newY, button='left')
+                # pyautogui.drag(newX - pyautogui.position()[0], newY - pyautogui.position()[1], button='left')
             else:
                 if mouseDown:
                     # pyautogui.mouseUp()
                     mouseDown = False
                     print("M1 Up")
+                pyautogui.moveTo(newX, newY)
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
