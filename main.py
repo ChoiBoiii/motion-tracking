@@ -9,6 +9,7 @@ from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
 from Scripts.overlay import render_hand_keypoints_on_pygame_surface, render_max_threshold_on_pygame_surface
 from Scripts.window import create_window, destroy_window
+from Scripts.gestures import pinching_index, pinching_middle, pinching_pinky, pinching_ring
 
 
 ## MAIN CONFIG ## 
@@ -112,24 +113,10 @@ def main():
             newY = MONITOR_HEIGHT * adjustedY
             # pyautogui.moveTo(newX, newY)
             
-            ## Click
-            # minX = min(x for x, _, _ in rightHand.palm)
-            # minY = min(y for _, y, _ in rightHand.palm)
-            # minZ = max(z for _, _, z in rightHand.palm)
-            # maxX = max(x for x, _, _ in rightHand.palm)
-            # maxY = max(y for _, y, _ in rightHand.palm)
-            # maxZ = max(z for _, _, z in rightHand.palm)
-            # diffX = maxX - minX
-            # diffY = maxY - minY
-            # diffZ = maxZ - minZ
-            x1, y1, z1 = rightHand.index[2]
-            x2, y2, z2 = rightHand.thumb[2]
-            # dx, dy, dz = (x1 - x2) / diffX, (y1 - y2) * diffY, (z1 - z2) * diffZ
-            dx, dy, dz = (x1 - x2), (y1 - y2), (z1 - z2)
-            dist = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
-            if dist < 0.04:
+
+            if pinching_index(rightHand):
                 if not mouseDown:
-                    # pyautogui.mouseDown()
+                    pyautogui.click()
                     mouseDown = True
                     print("M1 Down")
                 pyautogui.dragTo(newX, newY, button='left')
@@ -139,7 +126,8 @@ def main():
                     # pyautogui.mouseUp()
                     mouseDown = False
                     print("M1 Up")
-                pyautogui.moveTo(newX, newY)
+                # pyautogui.moveTo(newX, newY)
+                pyautogui.move(newX - pyautogui.position()[0], newY - pyautogui.position()[1])
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
