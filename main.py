@@ -11,7 +11,7 @@ from Scripts.camera import bind_cam, get_cam_frame
 
 ## MAIN CONFIG ## 
 MAX_INPUT_THRESHOLD_X = 0.8      # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
-MAX_INPUT_THRESHOLD_Y = 0.8      # The ratio of frameDimensions:windowDimensions at which mouse y coord is maxed to edges
+MAX_INPUT_THRESHOLD_Y = 0.7      # The ratio of frameDimensions:windowDimensions at which mouse y coord is maxed to edges
 IMAGE_REDUCTION_SCALE = 4        # Size = 1/n * size
 MAX_FPS = 60                     # The FPS cap of the main loop
 CAM_INDEX = 0                    # The index of the camera to get input from
