@@ -63,6 +63,9 @@ def main():
     ## Abstract mediapipe functions
     hands=mp.solutions.holistic.Holistic(static_image_mode=False)
 
+    ## TEST
+    mouseDown = False
+
     ## Main loop
     run = True
     while run:
@@ -110,12 +113,29 @@ def main():
             pyautogui.moveTo(newX, newY)
             
             ## Click
+            # minX = min(x for x, _, _ in rightHand.palm)
+            # minY = min(y for _, y, _ in rightHand.palm)
+            # minZ = max(z for _, _, z in rightHand.palm)
+            # maxX = max(x for x, _, _ in rightHand.palm)
+            # maxY = max(y for _, y, _ in rightHand.palm)
+            # maxZ = max(z for _, _, z in rightHand.palm)
+            # diffX = maxX - minX
+            # diffY = maxY - minY
+            # diffZ = maxZ - minZ
             x1, y1, z1 = rightHand.index[2]
             x2, y2, z2 = rightHand.thumb[2]
-            dx, dy, dz = x1 - x2, y1 - y2, z1 - z2
+            # dx, dy, dz = (x1 - x2) / diffX, (y1 - y2) * diffY, (z1 - z2) * diffZ
+            dx, dy, dz = (x1 - x2), (y1 - y2), (z1 - z2)
             dist = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
             if dist < 0.04:
-                pyautogui.click()
+                if not mouseDown:
+                    pyautogui.mouseDown()
+                    mouseDown = True
+            else:
+                if mouseDown:
+                    pyautogui.mouseUp()
+                    mouseDown = False
+            print(dist, rightHand.thumb[2][2] - rightHand.index[2][2])
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
@@ -137,7 +157,7 @@ def main():
             py.display.update()
 
         ## Limit framerate
-        print("FPS:", 1000/clock.tick(MAX_FPS))
+        # print("FPS:", 1000/clock.tick(MAX_FPS))
 
     ## Quit PyGame
     py.quit()
