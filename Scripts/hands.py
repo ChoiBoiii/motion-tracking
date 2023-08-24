@@ -42,6 +42,15 @@ class HandMesh:
         for landmark in handLandmarks:
             keyPoints.append((landmark.x, landmark.y, landmark.z))
         return HandMesh.create_from_point_list(keyPoints, handType=handType)
-        
+    
+    ## Returns the average position of all palm keypoints
+    def get_palm_center(self) -> tuple[int, int, int]:
+        rightSum = [sum(i) for i in zip(*self.palm)]
+        avgX = rightSum[0] / len(self.palm)
+        avgY = rightSum[1] / len(self.palm)
+        avgZ = rightSum[2] / len(self.palm)
+        return (avgX, avgY, avgZ)
+
+
 ## Extract hand meshes from given image
 # def get_hand_meshes_from_image() -> List[]

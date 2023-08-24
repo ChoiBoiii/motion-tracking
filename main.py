@@ -20,6 +20,17 @@ MAX_FPS = 60                     # The FPS cap of the main loop
 CAM_INDEX = 0                    # The index of the camera to get input from
 
 
+## Convert hand coord to monitor coord
+def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: tuple[int, int]) -> tuple[int, int]:
+    avgX = handCoord[0]
+    avgY = handCoord[1]
+    adjustedX = 0.5 + (1 / MAX_INPUT_THRESHOLD_X * (avgX - 0.5))
+    adjustedY = 0.5 + (1 / MAX_INPUT_THRESHOLD_Y * (avgY - 0.5))
+    monitorX = monitorDimensions[0] * (1 - adjustedX)
+    monitorY = monitorDimensions[1] * adjustedY
+    return (monitorX, monitorY)
+
+
 ## MAIN
 def main():
 
@@ -104,14 +115,8 @@ def main():
         if rightHand:
 
             ## Move
-            rightSum = [sum(i) for i in zip(*rightHand.palm)]
-            avgX = rightSum[0] / len(rightHand.palm)
-            avgY = rightSum[1] / len(rightHand.palm)
-            adjustedX = 0.5 + (1 / MAX_INPUT_THRESHOLD_X * (avgX - 0.5))
-            adjustedY = 0.5 + (1 / MAX_INPUT_THRESHOLD_Y * (avgY - 0.5))
-            newX = MONITOR_WIDTH * (1 - adjustedX)
-            newY = MONITOR_HEIGHT * adjustedY
-            # pyautogui.moveTo(newX, newY)
+            monitorPos = hand_coord_to_monitor_coord(rightHand.get_palm_center(), MONITOR_DIMENSIONS)
+            pyautogui.moveTo(monitorPos[0], monitorPos[1])
             
 
             if pinching_index(rightHand):
@@ -119,7 +124,7 @@ def main():
                     pyautogui.click()
                     mouseDown = True
                     print("M1 Down")
-                pyautogui.dragTo(newX, newY, button='left')
+                pyautogui.dragTo(monitorPos[0], monitorPos[1], button='left')
                 # pyautogui.drag(newX - pyautogui.position()[0], newY - pyautogui.position()[1], button='left')
             else:
                 if mouseDown:
@@ -127,7 +132,7 @@ def main():
                     mouseDown = False
                     print("M1 Up")
                 # pyautogui.moveTo(newX, newY)
-                pyautogui.move(newX - pyautogui.position()[0], newY - pyautogui.position()[1])
+                pyautogui.move(monitorPos[0] - pyautogui.position()[0], monitorPos[1] - pyautogui.position()[1])
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
