@@ -110,7 +110,7 @@ def main():
             adjustedY = 0.5 + (1 / MAX_INPUT_THRESHOLD_Y * (avgY - 0.5))
             newX = MONITOR_WIDTH * (1 - adjustedX)
             newY = MONITOR_HEIGHT * adjustedY
-            pyautogui.moveTo(newX, newY)
+            # pyautogui.moveTo(newX, newY)
             
             ## Click
             # minX = min(x for x, _, _ in rightHand.palm)
@@ -129,13 +129,14 @@ def main():
             dist = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
             if dist < 0.04:
                 if not mouseDown:
-                    pyautogui.mouseDown()
+                    # pyautogui.mouseDown()
                     mouseDown = True
+                    print("M1 Down")
             else:
                 if mouseDown:
-                    pyautogui.mouseUp()
+                    # pyautogui.mouseUp()
                     mouseDown = False
-            print(dist, rightHand.thumb[2][2] - rightHand.index[2][2])
+                    print("M1 Up")
 
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
