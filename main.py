@@ -154,21 +154,20 @@ def main():
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
 
-            ## Render keypoints
-            if leftHand:
-                for x, y, _ in leftHand.allKeypoints:
-                    pixelPos = (int(x * frame.img.shape[1]), int(y * frame.img.shape[0]))
-                    cv2.circle(frame.img, pixelPos, int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0,255,0), -1)
-            if rightHand:
-                for x, y, _ in rightHand.allKeypoints:
-                    pixelPos = (int(x * frame.img.shape[1]), int(y * frame.img.shape[0]))
-                    cv2.circle(frame.img, pixelPos, int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200) + 1, (0,255,0), -1)
-
             ## Convert to PyGame surface
             frame.convert_to(ImgFormat.RGB)
             outSurf = frame_to_pygame_surface(frame)
 
             ## Draw keypoints
+            surfWidth, surfHeight = outSurf.get_size()
+            if leftHand:
+                for x, y, _ in leftHand.allKeypoints:
+                    pxPos = (surfWidth * (1 - x), y * surfHeight)
+                    py.draw.circle(outSurf, (0,255,0), pxPos, min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200 + 1)
+            if rightHand:
+                for x, y, _ in rightHand.allKeypoints:
+                    pxPos = (surfWidth * (1 - x), y * surfHeight)
+                    py.draw.circle(outSurf, (0,255,0), pxPos, min(WINDOW_WIDTH, WINDOW_HEIGHT) / 200 + 1)
 
             ## Add max threshold visualiser
             py.draw.rect(outSurf, (255,255,0), 
