@@ -14,7 +14,7 @@ from Scripts.hands import HandMesh, HandType
 ## MAIN CONFIG ## 
 MAX_INPUT_THRESHOLD_X = 0.8      # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
 MAX_INPUT_THRESHOLD_Y = 0.7      # The ratio of frameDimensions:windowDimensions at which mouse y coord is maxed to edges
-IMAGE_REDUCTION_SCALE = 4        # Size = 1/n * size
+IMAGE_REDUCTION_SCALE = 0.25     # new_size = n * size
 MAX_FPS = 60                     # The FPS cap of the main loop
 CAM_INDEX = 0                    # The index of the camera to get input from
 
@@ -42,6 +42,7 @@ def render_hand_keypoints_on_pygame_surface(pygameSurface: py.Surface, handMeshe
                     if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
                         py.draw.circle(pygameSurface, (0,255,0), pxPos, 3)
 
+
 ## MAIN
 def main():
 
@@ -67,8 +68,8 @@ def main():
     CAMERA_HEIGHT = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
     CAMERA_DIMENSIONS = (CAMERA_WIDTH, CAMERA_HEIGHT)
     print(f"Camera dimensions (px): [{CAMERA_WIDTH}, {CAMERA_HEIGHT}]")
-    WINDOW_WIDTH = CAMERA_WIDTH / IMAGE_REDUCTION_SCALE
-    WINDOW_HEIGHT = CAMERA_HEIGHT / IMAGE_REDUCTION_SCALE
+    WINDOW_WIDTH = CAMERA_WIDTH * IMAGE_REDUCTION_SCALE
+    WINDOW_HEIGHT = CAMERA_HEIGHT * IMAGE_REDUCTION_SCALE
     WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
     print(f"Window dimensions (px): [{WINDOW_WIDTH}, {WINDOW_HEIGHT}]")
 
@@ -111,7 +112,7 @@ def main():
         frame = get_cam_frame(cam)
 
         ## Reduce image resolution for optimisation
-        scale_frame(frame, 1 / IMAGE_REDUCTION_SCALE)
+        scale_frame(frame, IMAGE_REDUCTION_SCALE)
 
         ## Process frame
         frame.convert_to(ImgFormat.RGB)
