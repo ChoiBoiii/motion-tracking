@@ -111,9 +111,9 @@ def main():
         frame.convert_to(ImgFormat.RGB)
         results = hands.process(frame.img)
         leftHand = None
+        rightHand = None
         if results.left_hand_landmarks:
             leftHand = HandMesh.create_from_mediapipe_hand_mesh(results.left_hand_landmarks.landmark, HandType.LEFT)
-        rightHand = None
         if results.right_hand_landmarks:
             rightHand = HandMesh.create_from_mediapipe_hand_mesh(results.right_hand_landmarks.landmark, HandType.RIGHT)
 
