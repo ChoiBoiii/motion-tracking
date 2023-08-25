@@ -1,7 +1,7 @@
 import pygame as py
 
 ## CLASS TO HANDLE INPUT
-class InputObj: # <- Class for mouse and keyboard input
+class PygameInputObj: # <- Class for mouse and keyboard input
 
     ## DEFINING MOUSE VARIABLES
     B1, B2, B3 = False, False, False # Mouse buttons held? left, middle, right

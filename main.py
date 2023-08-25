@@ -2,7 +2,7 @@
 import cv2
 import pygame as py
 import mediapipe as mp
-from Scripts.input_handler import InputObj
+from Scripts.input_handler import PygameInputObj
 from Scripts.formatting import Image, ImgFormat
 from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
@@ -10,6 +10,8 @@ from Scripts.overlay import render_overlay
 from Scripts.window import create_window, destroy_window
 from Scripts.gestures import Gestures
 from pynput import keyboard, mouse
+import pynput
+from typing import Union
 
 
 ## MAIN CONFIG ## 
@@ -51,10 +53,29 @@ def process_frame(handsFunction, frame: Image) -> tuple[HandMesh, HandMesh]:
     return leftHand,rightHand
 
 
-def on_press(key):
-    pass
-def on_release(key):
-    pass
+def on_press(key: Union[keyboard.Key, keyboard.KeyCode, None]) -> None:
+    try:
+        if type(key) == keyboard.KeyCode:
+            if key.char == 't':
+                print("Press TOGGLE")
+        else:
+            if key == keyboard.Key.esc:
+                print("Press ESCAPE")
+    except Exception as e:
+        print("ERROR: Problem parsing keyboard input:")
+        print(e)
+
+def on_release(key: Union[keyboard.Key, keyboard.KeyCode, None]) -> None:
+    try:
+        if type(key) == keyboard.KeyCode:
+            if key.char == 't':
+                print("Release TOGGLE")
+        else:
+            if key == keyboard.Key.esc:
+                print("Release ESCAPE")
+    except Exception as e:
+        print("ERROR: Problem parsing keyboard input:")
+        print(e)
 
 
 ## MAIN
@@ -92,7 +113,7 @@ def main():
         SCREEN = create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
 
     ## Init input object for PyGame inputs
-    Input = InputObj()
+    Input = PygameInputObj()
 
     ## Abstract mediapipe functions
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
@@ -181,7 +202,7 @@ def main():
             Input.handleGettingInput()
 
             ## Handle exit case
-            if Input.quitButtonPressed or Input.keys[py.K_ESCAPE]:
+            if Input.quitButtonPressed:# or Input.keys[py.K_ESCAPE]:
                 run = False
 
             ## Disable image capture preview
