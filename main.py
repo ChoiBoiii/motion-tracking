@@ -10,6 +10,8 @@ from Scripts.hands import HandMesh, HandType
 from Scripts.overlay import render_overlay
 from Scripts.window import create_window, destroy_window
 from Scripts.gestures import Gestures
+from pprint import pprint
+import inspect
 
 
 ## MAIN CONFIG ## 
@@ -74,7 +76,9 @@ def main():
     Input = InputObj()
 
     ## Abstract mediapipe functions
-    hands=mp.solutions.holistic.Holistic(static_image_mode=False)
+    # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
+    hands = mp.solutions.hands.Hands(
+        static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
     ## Object to hold gesture info
     gestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
@@ -107,10 +111,15 @@ def main():
         results = hands.process(frame.img)
         leftHand = None
         rightHand = None
-        if results.left_hand_landmarks:
-            leftHand = HandMesh.create_from_mediapipe_hand_mesh(results.left_hand_landmarks.landmark, HandType.LEFT)
-        if results.right_hand_landmarks:
-            rightHand = HandMesh.create_from_mediapipe_hand_mesh(results.right_hand_landmarks.landmark, HandType.RIGHT)
+        if results.multi_handedness:
+            for i, handedness in enumerate(results.multi_handedness):
+                handTypeStr = handedness.classification[0].label
+                if handTypeStr == 'Left':
+                    rightHand = HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, HandType.RIGHT)
+                elif handTypeStr == 'Right':
+                    leftHand = HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, HandType.LEFT)
+                else:
+                    print("WARNING: Encountered hand with invalid handedness during parsing")
 
         ## Move mouse
         dominantHand = rightHand
