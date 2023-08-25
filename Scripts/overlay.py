@@ -1,6 +1,6 @@
 import pygame as py
 from typing import Union
-from .hands import HandMesh
+from .hands import HandMesh, HandType
 from .formatting import frame_to_pygame_surface
 from .formatting import Image
 
@@ -53,19 +53,21 @@ def render_mouse_coord_origin(pygameSurface: py.Surface, handMesh: HandMesh) -> 
 
 
 ## SCREEN, frame, leftHand, rightHand, MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y
-def render_overlay(dispaySurface: py.Surface, frame: Image, 
-                   leftHand: HandMesh, rightHand: HandMesh, 
+def render_overlay(dispaySurface: py.Surface, frame: Image, hands: list[HandMesh], 
                    maxInputThresholdX: float, maxInputThresholdY: float) -> None:
     
     ## Convert to PyGame surface
     outSurf = frame_to_pygame_surface(frame)
 
     ## Draw keypoints
-    render_hand_keypoints_on_pygame_surface(outSurf, [leftHand, rightHand])
+    render_hand_keypoints_on_pygame_surface(outSurf, hands)
 
     ## Draw mouse coord origin
-    if rightHand:
-        render_mouse_coord_origin(outSurf, rightHand)
+    for hand in hands:
+        if hand:
+            if hand.type == HandType.RIGHT:
+                render_mouse_coord_origin(outSurf, hand)
+                break
 
     ## Draw max threshold visualiser
     render_max_threshold_on_pygame_surface(outSurf, maxInputThresholdX, maxInputThresholdY)
@@ -75,4 +77,3 @@ def render_overlay(dispaySurface: py.Surface, frame: Image,
 
 
 
-    

@@ -174,7 +174,7 @@ def main():
         if SHOW_IMAGE_CAPTURE:
 
             ## Render and add the preview overlay to the screen display surface
-            render_overlay(SCREEN, frame, leftHand, rightHand, MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
+            render_overlay(SCREEN, frame, [leftHand, rightHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
 
             ## Update display (make changes take effect)
             py.display.update()
