@@ -3,8 +3,8 @@ import cv2
 import pygame as py
 import mediapipe as mp
 from Scripts import window
+from Scripts import camera
 from Scripts.formatting import Image, ImgFormat
-from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
 from Scripts.overlay import render_overlay
 from Scripts.gestures import Gestures
@@ -63,7 +63,7 @@ def main():
     # ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
     ## Open webcam and bind input
-    cam = bind_cam(CAM_INDEX)
+    cam = camera.Camera(CAM_INDEX)
 
     ## Init PyGame
     py.init()
@@ -74,9 +74,8 @@ def main():
     MONITOR_HEIGHT = DISPLAY_INFO.current_h
     MONITOR_DIMENSIONS = (MONITOR_WIDTH, MONITOR_HEIGHT)
     print(f"Monitor dimensions (px): [{MONITOR_WIDTH}, {MONITOR_HEIGHT}]")
-    CAMERA_WIDTH = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
-    CAMERA_HEIGHT = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    CAMERA_DIMENSIONS = (CAMERA_WIDTH, CAMERA_HEIGHT)
+    CAMERA_DIMENSIONS = cam.get_feed_dimensions()
+    CAMERA_WIDTH, CAMERA_HEIGHT = CAMERA_DIMENSIONS
     print(f"Camera dimensions (px): [{CAMERA_WIDTH}, {CAMERA_HEIGHT}]")
     WINDOW_WIDTH = CAMERA_WIDTH * IMAGE_REDUCTION_SCALE
     WINDOW_HEIGHT = CAMERA_HEIGHT * IMAGE_REDUCTION_SCALE
@@ -105,7 +104,7 @@ def main():
     while run:
 
         ## Get input from cam 
-        frame = get_cam_frame(cam)
+        frame = cam.get_frame()
 
         ## Reduce image resolution for optimisation
         frame.scale(IMAGE_REDUCTION_SCALE)
@@ -189,7 +188,7 @@ def main():
     py.quit()
 
     ## Free camera
-    cam.release()
+    cam.deinit()
 
     ## Deinitialise and destroy controllers and handlers
     inputHandler.deinit()
