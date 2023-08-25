@@ -136,7 +136,6 @@ class Keyboard:
         Called by keyboard listener when a key is pressed.
         '''
         self.pressedKeys.add(key)
-        print(key, type(key), self.pressedKeys)
 
 
     ## Called by keyboard listener when a key is released

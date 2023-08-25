@@ -164,20 +164,21 @@ def main():
             ## Update display (make changes take effect)
             py.display.update()
 
+            ## Disable image capture preview
+            if inputHandler.key_is_down(pynput.keyboard.KeyCode.from_char('t')):
+                print("Toggling overlay")
+                if SHOW_IMAGE_CAPTURE:
+                    destroy_window()
+                SHOW_IMAGE_CAPTURE = False
+
             ## Poll PyGame window exit
             for event in py.event.get():
                 if event.type == py.QUIT:
                     run = False
-
+                    
             ## Exit if escape key pressed
             if inputHandler.key_is_down(pynput.keyboard.Key.esc):
                 run = False
-
-            ## Disable image capture preview
-            if inputHandler.key_is_down(pynput.keyboard.KeyCode.from_char('t')):
-                if SHOW_IMAGE_CAPTURE:
-                    destroy_window()
-                SHOW_IMAGE_CAPTURE = False
 
         # Limit framerate
         clock.tick(MAX_FPS)
