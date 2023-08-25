@@ -74,13 +74,7 @@ def main():
     Input = InputObj()
 
     ## Abstract mediapipe functions
-    hands=mp.solutions.holistic.Holistic(static_image_mode=False)
-
-    ## TEST
-    indexPiched = False
-    middlePinched = False
-    ringPinched = False
-    pinkyPinched = False
+    hands=mp.solutions.holistic.Holistic(static_image_mode=True)
 
     ## Object to hold gesture info
     gestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
@@ -129,46 +123,38 @@ def main():
             gestures.extract_gestrues(dominantHand)
 
             if gestures.is_pinching_index():
-                if not indexPiched:
+                if not gestures.was_pinching_index():
                     pyautogui.mouseDown()
-                    indexPiched = True
                     print("Pinch   | Index")
                 # pyautogui.dragTo(mousePos[0], mousePos[1], button='left', duration=0)
                 # pyautogui.drag(newX - pyautogui.position()[0], newY - pyautogui.position()[1], button='left')
                 pyautogui.moveTo(mousePos[0], mousePos[1], duration=0)
             else:
-                if indexPiched:
+                if gestures.was_pinching_index():
                     pyautogui.mouseUp()
-                    indexPiched = False
                     print("Unpinch | Index")
                 # pyautogui.moveTo(newX, newY)
                 pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
 
             if gestures.is_pinching_middle():
-                if not middlePinched:
-                    middlePinched = True
+                if not gestures.was_pinching_middle():
                     print("Pinch   | Middle")
             else:
-                if middlePinched:
-                    middlePinched = False
+                if gestures.was_pinching_middle():
                     print("Unpinch | Middle")
 
             if gestures.is_pinching_ring():
-                if not ringPinched:
-                    ringPinched = True
+                if not gestures.was_pinching_ring():
                     print("Pinch   | Ring")
             else:
-                if ringPinched:
-                    ringPinched = False
+                if gestures.was_pinching_ring():
                     print("Unpinch | Ring")
 
             if gestures.is_pinching_pinky():
-                if not pinkyPinched:
-                    pinkyPinched = True
+                if not gestures.was_pinching_pinky():
                     print("Pinch   | Pinky")
             else:
-                if pinkyPinched:
-                    pinkyPinched = False
+                if gestures.was_pinching_pinky():
                     print("Unpinch | Pinky")
             
 
