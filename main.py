@@ -2,14 +2,12 @@
 import cv2
 import pygame as py
 import mediapipe as mp
-from Scripts.input_handler import PygameInputObj
+from Scripts import window
 from Scripts.formatting import Image, ImgFormat
 from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
 from Scripts.overlay import render_overlay
-from Scripts.window import create_window, destroy_window
 from Scripts.gestures import Gestures
-from pynput import keyboard, mouse
 from Scripts.input import InputHandler, CREATE_MOUSE_CONTROLLER, CREATE_KEYBOARD_LISTENER
 import pynput
 
@@ -86,8 +84,8 @@ def main():
     print(f"Window dimensions (px): [{WINDOW_WIDTH}, {WINDOW_HEIGHT}]")
 
     ## Handle PyGame window
-    create_overlay = lambda : create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
-    destroy_overlay = lambda : destroy_window()
+    create_overlay = lambda : window.create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
+    destroy_overlay = lambda : window.destroy_window()
     if OVERLAY_ACTIVE:
         SCREEN = create_overlay()
 
