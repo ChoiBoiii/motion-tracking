@@ -111,7 +111,12 @@ class Keyboard:
         '''
         
         ## Sets to hold key input
-        self.pressedKeys = set({}) # Keys currently pressed down
+        self.pressed = set({})       # Keys pressed down durin
+        self.prevPressed = set({})   # Keys currently pressed down
+
+        ## Store information for later processing - Used internally
+        self.__keysPressedThisCycle = [] # List of keys which were pressed down this cycle
+        self.__pressedKeys = set({})  # List of all keys currently pressed
 
         ## Objects to hold controller and listener
         self.controller = None
@@ -135,7 +140,8 @@ class Keyboard:
         '''
         Called by keyboard listener when a key is pressed.
         '''
-        self.pressedKeys.add(key)
+        self.__keysPressedThisCycle.append(key)
+        self.__pressedKeys.add(key)
 
 
     ## Called by keyboard listener when a key is released
@@ -143,7 +149,7 @@ class Keyboard:
         '''
         Called by keyboard listener when a key is released.
         '''
-        self.pressedKeys.discard(key)
+        self.__pressedKeys.discard(key)
 
 
     ## Creates a keyboard controller
@@ -215,12 +221,12 @@ class Keyboard:
 
     ## Returns whether the given key is currently pressed
     def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return (key in self.pressedKeys)
+        return (key in self.pressed)
 
 
     ## Returns whether the given key is not currently pressed
     def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return (key not in self.pressedKeys)
+        return (key not in self.pressed)
 
 
     ## Deinit
@@ -235,6 +241,28 @@ class Keyboard:
 
         ## Destroy listener
         self.destroy_keyboard_listener()
+
+
+    ## Cycles input
+    def cycle(self):
+        '''
+        DESCRIPTION
+        Handles muli events of same key. E.g., [press,release,press] since last cycle:
+            * press > release > press = keyDown
+            * press > release = keyDown
+            * prevDown > nothing = keyDown
+            * 
+        '''
+
+        ## Cycle prev and current keys
+        self.prevPressed = self.pressed
+        self.pressed = self.__pressedKeys.copy()
+
+        ## Add keys that were pressed and released between polling
+        self.pressed.add([key for key in self.__keysPressedThisCycle])
+
+        ## Clear list of keys pressed this cycle
+        self.__keysPressedThisCycle.clear()
 
 
 
@@ -267,12 +295,12 @@ class InputHandler:
 
     ## Returns whether the given key is currently pressed
     def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return (key in self.keyboard.pressedKeys)
+        return (key in self.keyboard.pressed)
 
 
     ## Returns whether the given key is not currently pressed
     def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return (key not in self.keyboard.pressedKeys)
+        return (key not in self.keyboard.pressed)
 
 
     ## Presses the mouse down
