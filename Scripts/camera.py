@@ -1,9 +1,6 @@
 ## IMPORT MODULES
 import cv2
-import pygame as py
-import numpy as np
-from Scripts.formatting import ImgFormat, Image
-from typing import Union
+from .formatting import ImgFormat, Image
 
 ## GETS CURRENT FRAME FROM CAMERA AND RETURNS AS cv2 frame
 def get_cam_frame(cam: cv2.VideoCapture) -> Image:

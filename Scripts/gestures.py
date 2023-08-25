@@ -1,11 +1,8 @@
-from Scripts.hands import HandMesh
-from typing import Union
+from .hands import HandMesh
+from .math import get_dist_3D
 
 PINCH_DIST_INIT_THRESHOLD = 0.04
 PINCH_DISH_EXIT_THRESHOLD = 0.2
-
-def get_dist_3D(p1: tuple[float, float, float], p2: tuple[float, float, float]) -> float:
-    return (((p1[0] - p2[0]) ** 2) + ((p1[1] - p2[1]) ** 2) + ((p1[2] - p2[2]) ** 2)) ** 0.5
 
 ## Class to hold and extract gestures from a hand mesh
 class Gestures:

@@ -1,6 +1,6 @@
 import pygame as py
 from typing import Union
-from Scripts.hands import HandMesh
+from .hands import HandMesh
 
 
 ## Converts the given point from hand coords to pixel coords
