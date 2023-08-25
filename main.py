@@ -168,6 +168,10 @@ def main():
                 destroy_overlay()
                 py.event.get() # Clear PyGame event queue to allow screen to disappear
 
+        ## Exit if escape key pressed
+        if inputHandler.key_is_down(pynput.keyboard.Key.esc):
+            run = False
+            
         ## Render image capture
         if OVERLAY_ACTIVE:
 
@@ -177,14 +181,8 @@ def main():
             ## Update display (make changes take effect)
             py.display.update()
 
-            ## Poll PyGame window exit
-            for event in py.event.get():
-                if event.type == py.QUIT:
-                    run = False
-                    
-            ## Exit if escape key pressed
-            if inputHandler.key_is_down(pynput.keyboard.Key.esc):
-                run = False
+            ## Clear PyGame event queue to allow screen to update
+            py.event.get()
 
         # Limit framerate
         clock.tick(MAX_FPS)
