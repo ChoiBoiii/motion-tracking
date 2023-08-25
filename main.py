@@ -4,7 +4,7 @@ import mediapipe as mp
 from Scripts import window
 from Scripts import camera
 from Scripts import formatting
-from Scripts.hands import HandMesh, HandType
+from Scripts import hands
 from Scripts.overlay import render_overlay
 from Scripts.gestures import Gestures
 from Scripts.input import InputHandler, CREATE_MOUSE_CONTROLLER, CREATE_KEYBOARD_LISTENER
@@ -34,7 +34,7 @@ def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: t
 
 
 ## Processes the given frame, returning [leftHand, rightHand]
-def process_frame(handsFunction, frame: formatting.Image) -> tuple[HandMesh, HandMesh]: 
+def process_frame(handsFunction, frame: formatting.Image) -> tuple[hands.HandMesh, hands.HandMesh]: 
     frame.convert_to(formatting.ImgFormat.RGB)
     results = handsFunction.process(frame.img)
     leftHand = None
@@ -43,9 +43,9 @@ def process_frame(handsFunction, frame: formatting.Image) -> tuple[HandMesh, Han
         for i, handedness in enumerate(results.multi_handedness):
             handTypeStr = handedness.classification[0].label
             if handTypeStr == 'Left':
-                rightHand = HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, HandType.RIGHT)
+                rightHand = hands.HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, hands.HandType.RIGHT)
             elif handTypeStr == 'Right':
-                leftHand = HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, HandType.LEFT)
+                leftHand = hands.HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, hands.HandType.LEFT)
             else:
                 print("WARNING: Encountered hand with invalid handedness during parsing.")
     return leftHand,rightHand
