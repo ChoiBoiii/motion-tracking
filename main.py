@@ -101,6 +101,9 @@ def main():
     ## Main loop
     run = True
     while run:
+        
+        ## Get input
+        inputHandler.cycle()
 
         ## Get input from cam 
         frame = cam.get_frame()
@@ -155,7 +158,7 @@ def main():
             inputHandler.move_mouse(dx, dy)
         
         ## Toggle image capture preview
-        if inputHandler.key_is_down(pynput.keyboard.KeyCode.from_char('t')):
+        if inputHandler.key_down(pynput.keyboard.KeyCode.from_char('t')):
             print("Toggling overlay")
             OVERLAY_ACTIVE = not OVERLAY_ACTIVE
             if OVERLAY_ACTIVE:
@@ -168,9 +171,12 @@ def main():
                         run = False
 
         ## Exit if escape key pressed
-        if inputHandler.key_is_down(pynput.keyboard.Key.esc):
+        if inputHandler.key_down(pynput.keyboard.Key.esc):
             run = False
-            
+        
+        ##
+        print(inputHandler.keyboard.pressed)
+
         ## Render image capture
         if OVERLAY_ACTIVE:
 

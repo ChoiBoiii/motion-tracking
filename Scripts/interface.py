@@ -220,12 +220,12 @@ class Keyboard:
     
 
     ## Returns whether the given key is currently pressed
-    def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+    def key_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key in self.pressed)
 
 
     ## Returns whether the given key is not currently pressed
-    def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+    def key_not_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key not in self.pressed)
 
 
@@ -259,7 +259,8 @@ class Keyboard:
         self.pressed = self.__pressedKeys.copy()
 
         ## Add keys that were pressed and released between polling
-        self.pressed.add([key for key in self.__keysPressedThisCycle])
+        for key in self.__keysPressedThisCycle:
+            self.pressed.add(key)
 
         ## Clear list of keys pressed this cycle
         self.__keysPressedThisCycle.clear()
@@ -294,14 +295,14 @@ class InputHandler:
 
 
     ## Returns whether the given key is currently pressed
-    def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return (key in self.keyboard.pressed)
+    def key_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+        return self.keyboard.key_down(key)
 
 
     ## Returns whether the given key is not currently pressed
-    def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return (key not in self.keyboard.pressed)
-
+    def key_not_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+        return self.keyboard.key_not_down(key)
+    
 
     ## Presses the mouse down
     def press_left_mouse(self):
@@ -327,4 +328,12 @@ class InputHandler:
         return self.mouse.get_pos()
     
 
+    ## Cycles input interfaces
+    def cycle(self):
+
+        ## Cycle mouse 
+        ## TODO
+
+        ## Cycle keyboard
+        self.keyboard.cycle()
 
