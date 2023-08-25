@@ -135,15 +135,12 @@ def main():
                 if not gestures.was_pinching_index():
                     print("Pinch   | Index")
                     pyautogui.mouseDown()
-                # pyautogui.dragTo(mousePos[0], mousePos[1], button='left', duration=0)
-                # pyautogui.drag(newX - pyautogui.position()[0], newY - pyautogui.position()[1], button='left')
                 pyautogui.moveTo(mousePos[0], mousePos[1], duration=0)
             else:
                 if gestures.was_pinching_index():
                     print("Unpinch | Index")
                     pyautogui.mouseUp()
                 pyautogui.moveTo(mousePos[0], mousePos[1])
-                # pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
 
             if gestures.is_pinching_middle():
                 if not gestures.was_pinching_middle():
