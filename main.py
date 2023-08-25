@@ -1,14 +1,14 @@
 ## IMPORT MODULES
+import pynput
 import pygame as py
 import mediapipe as mp
 from Scripts import window
 from Scripts import camera
 from Scripts import formatting
 from Scripts import hands
+from Scripts import interface 
 from Scripts.overlay import render_overlay
 from Scripts.gestures import Gestures
-from Scripts import interface
-import pynput
 
 
 ## MAIN CONFIG ## 
