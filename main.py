@@ -118,13 +118,14 @@ def main():
             rightHand = HandMesh.create_from_mediapipe_hand_mesh(results.right_hand_landmarks.landmark, HandType.RIGHT)
 
         ## Move mouse
-        if rightHand:
+        dominantHand = rightHand
+        if dominantHand:
 
             ## Move
-            mousePos = hand_coord_to_monitor_coord(rightHand.get_palm_center(), MONITOR_DIMENSIONS)
+            mousePos = hand_coord_to_monitor_coord(dominantHand.get_palm_center(), MONITOR_DIMENSIONS)
             
             ## Extract the gestures from the right hand's hand mesh
-            gestures.extract_gestrues(rightHand)
+            gestures.extract_gestrues(dominantHand)
 
             if gestures.is_pinching_index():
                 if not indexPiched:
