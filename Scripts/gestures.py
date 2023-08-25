@@ -1,5 +1,6 @@
 from .hands import HandMesh
 from .math import get_dist_3D
+from typing import Union
 
 
 ## Class to hold and extract gestures from a hand mesh
@@ -75,13 +76,21 @@ class Gestures:
         return dist < self.pinchExitThreshold if self.was_pinching_pinky() else dist < self.pinchInitThreshold
 
     ## Extract gestures from a hand mesh
-    def extract_gestrues(self, handMesh: HandMesh) -> None:
+    def extract_gestrues(self, handMesh: Union[HandMesh, None]) -> None:
 
         ## Shift
         self.__prevGestures = self.__gestures
+        self.__gestures = dict([])
+
+        ## No restures if given none
+        if not handMesh:
+            self.__gestures[Gestures.PINCHING_INDEX] = False
+            self.__gestures[Gestures.PINCHING_MIDDLE] = False
+            self.__gestures[Gestures.PINCHING_RING] = False
+            self.__gestures[Gestures.PINCHING_PINKY] = False
+            return
 
         ## Extract pinching
-        self.__gestures = dict([])
         self.__gestures[Gestures.PINCHING_INDEX] = self.__pinching_index(handMesh)
         self.__gestures[Gestures.PINCHING_MIDDLE] = self.__pinching_middle(handMesh)
         self.__gestures[Gestures.PINCHING_RING] = self.__pinching_ring(handMesh)
