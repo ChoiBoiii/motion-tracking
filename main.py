@@ -35,6 +35,7 @@ def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: t
     return (monitorX, monitorY)
 
 
+
 ## Processes the given frame, returning [leftHand, rightHand]
 def process_frame(handsFunction, frame: Image) -> tuple[HandMesh, HandMesh]: 
     frame.convert_to(ImgFormat.RGB)
@@ -58,9 +59,9 @@ def process_frame(handsFunction, frame: Image) -> tuple[HandMesh, HandMesh]:
 def main():
 
     ## CONFIG ##
-    SHOW_IMAGE_CAPTURE = True        # Whether to render the motion capture input to the screen
-    WINDOW_NAME = 'Motion Capture'   # The title of the PyGame window
-    WINDOW_FLAGS = 0                 # The flags to create the PyGame window with
+    OVERLAY_ACTIVE = True              # Whether to render the motion capture input overlay to the screen
+    WINDOW_NAME    = 'Motion Capture'  # The title of the PyGame window
+    WINDOW_FLAGS   = 0                 # The flags to create the PyGame window with
     # ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
     ## Open webcam and bind input
@@ -84,9 +85,11 @@ def main():
     WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
     print(f"Window dimensions (px): [{WINDOW_WIDTH}, {WINDOW_HEIGHT}]")
 
-    ## Init PyGame window
-    if SHOW_IMAGE_CAPTURE:
-        SCREEN = create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
+    ## Handle PyGame window
+    create_overlay = lambda : create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
+    destroy_overlay = lambda : destroy_window()
+    if OVERLAY_ACTIVE:
+        SCREEN = create_overlay()
 
     ## Init input object for PyGame inputs
     inputHandler = InputHandler(creationFlags=(CREATE_MOUSE_CONTROLLER | CREATE_KEYBOARD_LISTENER))
@@ -155,21 +158,24 @@ def main():
             dy = destPos[1] - currPos[1]
             inputHandler.move_mouse(dx, dy)
         
+        ## Toggle image capture preview
+        if inputHandler.key_is_down(pynput.keyboard.KeyCode.from_char('t')):
+            print("Toggling overlay")
+            OVERLAY_ACTIVE = not OVERLAY_ACTIVE
+            if OVERLAY_ACTIVE:
+                SCREEN = create_overlay()
+            else:
+                destroy_overlay()
+                py.event.get() # Clear PyGame event queue to allow screen to disappear
+
         ## Render image capture
-        if SHOW_IMAGE_CAPTURE:
+        if OVERLAY_ACTIVE:
 
             ## Render and add the preview overlay to the screen display surface
             render_overlay(SCREEN, frame, [leftHand, rightHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
 
             ## Update display (make changes take effect)
             py.display.update()
-
-            ## Disable image capture preview
-            if inputHandler.key_is_down(pynput.keyboard.KeyCode.from_char('t')):
-                print("Toggling overlay")
-                if SHOW_IMAGE_CAPTURE:
-                    destroy_window()
-                SHOW_IMAGE_CAPTURE = False
 
             ## Poll PyGame window exit
             for event in py.event.get():
