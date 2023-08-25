@@ -10,7 +10,7 @@ from Scripts.overlay import render_overlay
 from Scripts.window import create_window, destroy_window
 from Scripts.gestures import Gestures
 from pynput import keyboard, mouse
-from Scripts.input import InputHandler, MOUSE_CONTROLLER, KEYBOARD_LISTENER
+from Scripts.input import InputHandler, CREATE_MOUSE_CONTROLLER, CREATE_KEYBOARD_LISTENER
 import pynput
 
 
@@ -89,8 +89,7 @@ def main():
         SCREEN = create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
 
     ## Init input object for PyGame inputs
-    Input = PygameInputObj()
-    inputHandler = InputHandler(creationFlags=(MOUSE_CONTROLLER | KEYBOARD_LISTENER))
+    inputHandler = InputHandler(creationFlags=(CREATE_MOUSE_CONTROLLER | CREATE_KEYBOARD_LISTENER))
 
     ## Abstract mediapipe functions
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
@@ -159,33 +158,23 @@ def main():
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
 
-            ## DEBUG
-            print(inputHandler.pressedKeys)
-
             ## Render and add the preview overlay to the screen display surface
             render_overlay(SCREEN, frame, [leftHand, rightHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
 
             ## Update display (make changes take effect)
             py.display.update()
 
-            # ## 
-            # for event in py.event.get():
-            #     if event.type == py.QUIT:
-            #         run = False
-
-            ## Get input from keyboard and mouse
-            Input.handleGettingInput()
+            ## Poll PyGame window exit
+            for event in py.event.get():
+                if event.type == py.QUIT:
+                    run = False
 
             ## Exit if escape key pressed
-            if pynput.keyboard.Key.esc in inputHandler.pressedKeys:
-                run = False
-
-            ## Handle exit case
-            if Input.quitButtonPressed:
+            if inputHandler.key_is_down(pynput.keyboard.Key.esc):
                 run = False
 
             ## Disable image capture preview
-            if Input.keys[py.K_t] and not Input.prevKeys[py.K_t]:
+            if inputHandler.key_is_down('t'):
                 if SHOW_IMAGE_CAPTURE:
                     destroy_window()
                 SHOW_IMAGE_CAPTURE = False
@@ -199,8 +188,8 @@ def main():
     ## Free camera
     cam.release()
 
-    ## Stop the keyboard listener
-    inputHandler.destroy_keyboard_listener()
+    ## Deinitialise and destroy controllers and handlers
+    inputHandler.deinit()
 
 
 ## RUN

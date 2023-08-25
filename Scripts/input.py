@@ -3,17 +3,18 @@ from typing import Union
 
 
 ## Flags to specify what to create on class init
-MOUSE_CONTROLLER = 1
-MOUSE_LISTENER = 2
-KEYBOARD_CONTROLLER = 4
-KEYBOARD_LISTENER = 8
+CREATE_MOUSE_CONTROLLER    = 1
+CREATE_MOUSE_LISTENER      = 2
+CREATE_KEYBOARD_CONTROLLER = 4
+CREATE_KEYBOARD_LISTENER   = 8
+CREATE_ALL = (CREATE_MOUSE_CONTROLLER | CREATE_MOUSE_LISTENER | CREATE_KEYBOARD_CONTROLLER | CREATE_KEYBOARD_LISTENER)
 
 
 ## Object to manage a mouse
 class Mouse:
 
     ## Init
-    def __init__(self, creationFlags: int):
+    def __init__(self, creationFlags: int=(CREATE_MOUSE_CONTROLLER | CREATE_MOUSE_LISTENER)):
         '''
         PARAMETERS
         creationFlags | Optional bitwise union of creation flags 'MOUSE_CONTROLLER' and 'MOUSE_LISTENER'
@@ -28,11 +29,11 @@ class Mouse:
         self.listenerActive = False
 
         ## Create mouse controller
-        if creationFlags & MOUSE_CONTROLLER:
+        if creationFlags & CREATE_MOUSE_CONTROLLER:
             self.create_mouse_controller()
         
         ## Create mouse listener
-        if creationFlags & MOUSE_LISTENER:
+        if creationFlags & CREATE_MOUSE_LISTENER:
             self.create_mouse_listener()
 
     ## Creates a mouse controller
@@ -75,28 +76,33 @@ class Mouse:
         return True
 
 
-## Object to handle keyboard and mouse input
-class InputHandler:
+## Object to manage a keyboard
+class Keyboard:
 
     ## Init
-    def __init__(self, creationFlags: int):
+    def __init__(self, creationFlags: int=(CREATE_KEYBOARD_CONTROLLER | CREATE_KEYBOARD_LISTENER)):
+        '''
+        PARAMETERS
+        creationFlags | Optional bitwise union of creation flags 'KEYBOARD_CONTROLLER' and 'KEYBOARD_LISTENER'
+        '''
         
         ## Sets to hold key input
         self.pressedKeys = set({}) # Keys currently pressed down
 
-        ## Flags to track what controllers and listeners have been created so far
-        self.keyboardControllerActive = False
-        self.keyboardListenerActive = False
+        ## Objects to hold controller and listener
+        self.controller = None
+        self.listener = None
 
-        ## Create mouse
-        self.mouse = Mouse(creationFlags)
+        ## Whether the controller and listener have been created
+        self.controllerActive = False
+        self.listenerActive = False
 
-        ## Create mouse listener
-        if creationFlags & KEYBOARD_CONTROLLER:
+        ## Create keyboard controller
+        if creationFlags & CREATE_KEYBOARD_CONTROLLER:
             self.create_keyboard_controller()
 
         ## Create keyboard listener
-        if creationFlags & KEYBOARD_LISTENER:
+        if creationFlags & CREATE_KEYBOARD_LISTENER:
             self.create_keyboard_listener()
 
     ## Handle key press event
@@ -122,12 +128,12 @@ class InputHandler:
         '''
 
         ## Return error if mouse controller already in use
-        if self.keyboardControllerActive:
+        if self.controllerActive:
             return False
         
         ## Create if possible
-        self.keyboardControllerActive = True
-        self.keyboardController = keyboard.Controller()
+        self.controllerActive = True
+        self.controller = keyboard.Controller()
 
         ## Return success
         return True
@@ -141,18 +147,21 @@ class InputHandler:
         '''
 
         ## Return error if mouse controller already in use
-        if self.keyboardListenerActive:
+        if self.listenerActive:
             return False
         
         ## Create if possible
-        self.keyboardListenerActive = True
-        self.keyboardListener = keyboard.Listener(on_press=self.__handle_key_press, on_release=self.__handle_key_release)
+        self.listenerActive = True
+        self.listener = keyboard.Listener(on_press=self.__handle_key_press, on_release=self.__handle_key_release)
 
         ## Start listener
-        self.keyboardListener.start()
+        self.listener.start()
 
         ## Return success
         return True
+
+    ## Desrtroy keyboard controller
+    ## TODO
 
     ## Destroys the keyboard listener
     def destroy_keyboard_listener(self) -> bool:
@@ -163,14 +172,52 @@ class InputHandler:
         '''
 
         ## Return error if doesn't exist
-        if not self.keyboardListenerActive:
+        if not self.listenerActive:
             return False
         
         ## Stop
-        self.keyboardListenerActive = False
-        self.keyboardListener.stop()
+        self.listenerActive = False
+        self.listener.stop()
 
         ## Return success
         return True
     
-        
+    ## Returns whether the given key is currently pressed
+    def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+        return (key in self.pressedKeys)
+
+    ## Returns whether the given key is not currently pressed
+    def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+        return (key not in self.pressedKeys)
+
+
+## Object to handle keyboard and mouse input
+class InputHandler:
+
+    ## Init
+    def __init__(self, creationFlags: int=CREATE_ALL):
+    
+        ## Create mouse
+        self.mouse = Mouse(creationFlags)
+
+        ## Create keyboard
+        self.keyboard = Keyboard(creationFlags)
+
+    ## Deinit
+    ## TODO
+    def deinit(self):
+        '''
+        DESCRIPTION
+        Deinitialises and destroys all controllers and handlers
+        '''
+        pass
+
+    ## Returns whether the given key is currently pressed
+    def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+        return (key in self.keyboard.pressedKeys)
+
+    ## Returns whether the given key is not currently pressed
+    def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+        return (key not in self.keyboard.pressedKeys)
+
+    
