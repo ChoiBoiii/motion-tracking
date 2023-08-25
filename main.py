@@ -7,7 +7,7 @@ from Scripts import formatting
 from Scripts import hands
 from Scripts.overlay import render_overlay
 from Scripts.gestures import Gestures
-from Scripts.input import InputHandler, CREATE_MOUSE_CONTROLLER, CREATE_KEYBOARD_LISTENER
+from Scripts import interface
 import pynput
 
 
@@ -88,7 +88,7 @@ def main():
         SCREEN = create_overlay()
 
     ## Init input object for PyGame inputs
-    inputHandler = InputHandler(creationFlags=(CREATE_MOUSE_CONTROLLER | CREATE_KEYBOARD_LISTENER))
+    inputHandler = interface.InputHandler(creationFlags=(interface.CREATE_MOUSE_CONTROLLER | interface.CREATE_KEYBOARD_LISTENER))
 
     ## Abstract mediapipe functions
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
