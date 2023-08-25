@@ -1,10 +1,9 @@
 ## IMPORT MODULES
-import cv2
 import pygame as py
 import mediapipe as mp
 from Scripts import window
 from Scripts import camera
-from Scripts.formatting import Image, ImgFormat
+from Scripts import formatting
 from Scripts.hands import HandMesh, HandType
 from Scripts.overlay import render_overlay
 from Scripts.gestures import Gestures
@@ -35,8 +34,8 @@ def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: t
 
 
 ## Processes the given frame, returning [leftHand, rightHand]
-def process_frame(handsFunction, frame: Image) -> tuple[HandMesh, HandMesh]: 
-    frame.convert_to(ImgFormat.RGB)
+def process_frame(handsFunction, frame: formatting.Image) -> tuple[HandMesh, HandMesh]: 
+    frame.convert_to(formatting.ImgFormat.RGB)
     results = handsFunction.process(frame.img)
     leftHand = None
     rightHand = None

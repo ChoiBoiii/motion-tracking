@@ -88,3 +88,4 @@ class Camera:
     ## Disconnects and destroys the camera instance 
     def deinit(self):
         self.cam.release()
+        
