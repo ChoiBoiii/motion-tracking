@@ -18,7 +18,8 @@ MAX_INPUT_THRESHOLD_Y = 0.7      # The ratio of frameDimensions:windowDimensions
 IMAGE_REDUCTION_SCALE = 0.25     # new_size = n * size
 MAX_FPS = 60                     # The FPS cap of the main loop
 CAM_INDEX = 0                    # The index of the camera to get input from
-
+PINCH_DIST_INIT_THRESHOLD = 0.05 # The distance threshold at which a pinch gesture is initiated
+PINCH_DISH_EXIT_THRESHOLD = 0.1  # The distance threshold at which a pinch gesture is exited
 
 ## Convert hand coord to monitor coord
 def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: tuple[int, int]) -> tuple[int, int]:
@@ -82,7 +83,7 @@ def main():
     pinkyPinched = False
 
     ## Object to hold gesture info
-    gestures = Gestures()
+    gestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
 
     ## Main loop
     run = True

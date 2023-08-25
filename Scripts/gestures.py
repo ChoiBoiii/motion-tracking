@@ -1,8 +1,6 @@
 from .hands import HandMesh
 from .math import get_dist_3D
 
-PINCH_DIST_INIT_THRESHOLD = 0.05
-PINCH_DISH_EXIT_THRESHOLD = 0.1
 
 ## Class to hold and extract gestures from a hand mesh
 class Gestures:
@@ -14,9 +12,7 @@ class Gestures:
     PINCHING_PINKY  = 4
 
     ## init
-    def __init__(self, 
-                 pinchInitThreshold=PINCH_DIST_INIT_THRESHOLD, 
-                 pinchExitThreshold=PINCH_DISH_EXIT_THRESHOLD):
+    def __init__(self, pinchInitThreshold, pinchExitThreshold):
 
         ## Save config variables
         self.pinchInitThreshold = pinchInitThreshold
