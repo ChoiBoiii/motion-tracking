@@ -12,13 +12,16 @@ from Scripts.gestures import Gestures
 
 
 ## MAIN CONFIG ## 
-MAX_INPUT_THRESHOLD_X = 0.8      # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
-MAX_INPUT_THRESHOLD_Y = 0.7      # The ratio of frameDimensions:windowDimensions at which mouse y coord is maxed to edges
-IMAGE_REDUCTION_SCALE = 0.25     # new_size = n * size
-MAX_FPS = 60                     # The FPS cap of the main loop
-CAM_INDEX = 0                    # The index of the camera to get input from
-PINCH_DIST_INIT_THRESHOLD = 0.05 # The distance threshold at which a pinch gesture is initiated
-PINCH_DISH_EXIT_THRESHOLD = 0.1  # The distance threshold at which a pinch gesture is exited
+CAM_INDEX = 0                      # The index of the camera to get input from
+IMAGE_REDUCTION_SCALE = 0.25       # new_size = n * size
+MAX_INPUT_THRESHOLD_X = 0.8        # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
+MAX_INPUT_THRESHOLD_Y = 0.7        # The ratio of frameDimensions:windowDimensions at which mouse y coord is maxed to edges
+PINCH_DIST_INIT_THRESHOLD = 0.05   # The distance threshold at which a pinch gesture is initiated
+PINCH_DISH_EXIT_THRESHOLD = 0.1    # The distance threshold at which a pinch gesture is exited
+WINDOW_NAME = 'Motion Capture'     # The title of the PyGame window
+WINDOW_FLAGS = 0                   # The flags to create the PyGame window with
+MAX_FPS = 60                       # The FPS cap of the main loop
+# ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
 ## Keyboard hotkeying
 TOGGLE_OVERLAY_KEY = pynput.keyboard.KeyCode.from_char('t') # Key to toggle the overlay
@@ -58,11 +61,8 @@ def process_frame(handsFunction, frame: formatting.Image) -> tuple[hands.HandMes
 ## MAIN
 def main():
 
-    ## CONFIG ##
-    OVERLAY_ACTIVE = True              # Whether to render the motion capture input overlay to the screen
-    WINDOW_NAME    = 'Motion Capture'  # The title of the PyGame window
-    WINDOW_FLAGS   = 0                 # The flags to create the PyGame window with
-    # ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
+    # Whether to start with the overlay active
+    overlayActive = True 
 
     ## Open webcam and bind input
     cam = camera.Camera(CAM_INDEX)
@@ -87,7 +87,7 @@ def main():
     ## Handle PyGame window
     create_overlay = lambda : window.create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
     destroy_overlay = lambda : window.destroy_window()
-    if OVERLAY_ACTIVE:
+    if overlayActive:
         SCREEN = create_overlay()
 
     ## Init input object for PyGame inputs
@@ -164,8 +164,8 @@ def main():
 
         if inputHandler.key_down(TOGGLE_OVERLAY_KEY) and not inputHandler.prev_key_down(TOGGLE_OVERLAY_KEY):
             print("Toggling overlay")
-            OVERLAY_ACTIVE = not OVERLAY_ACTIVE
-            if OVERLAY_ACTIVE:
+            overlayActive = not overlayActive
+            if overlayActive:
                 SCREEN = create_overlay()
             else:
                 destroy_overlay()
@@ -179,7 +179,7 @@ def main():
             run = False
         
         ## Render image capture
-        if OVERLAY_ACTIVE:
+        if overlayActive:
 
             ## Render and add the preview overlay to the screen display surface
             render_overlay(SCREEN, frame, [leftHand, rightHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
