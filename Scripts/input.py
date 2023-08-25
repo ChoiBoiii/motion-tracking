@@ -75,6 +75,19 @@ class Mouse:
         ## Return success
         return True
 
+    ## Deinit
+    def deinit(self):
+        '''
+        DESCRIPTION
+        Deinitialises and destroys all controllers and handlers
+        '''
+        
+        ## Destroy controller
+        ## Doesn't need to be destroyed
+
+        ## Destroy listener
+        ## TODO
+
 
 ## Object to manage a keyboard
 class Keyboard:
@@ -190,6 +203,19 @@ class Keyboard:
     def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key not in self.pressedKeys)
 
+    ## Deinit
+    def deinit(self):
+        '''
+        DESCRIPTION
+        Deinitialises and destroys all controllers and handlers
+        '''
+        
+        ## Destroy controller
+        ## Doesn't need to be destroyed
+
+        ## Destroy listener
+        self.destroy_keyboard_listener()
+
 
 ## Object to handle keyboard and mouse input
 class InputHandler:
@@ -204,13 +230,17 @@ class InputHandler:
         self.keyboard = Keyboard(creationFlags)
 
     ## Deinit
-    ## TODO
     def deinit(self):
         '''
         DESCRIPTION
         Deinitialises and destroys all controllers and handlers
         '''
-        pass
+
+        ## Destroy mouse
+        self.mouse.deinit()
+
+        ## Destroy keyboard
+        self.keyboard.deinit()
 
     ## Returns whether the given key is currently pressed
     def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
@@ -220,4 +250,3 @@ class InputHandler:
     def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key not in self.keyboard.pressedKeys)
 
-    
