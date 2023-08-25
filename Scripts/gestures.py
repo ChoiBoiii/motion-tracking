@@ -23,13 +23,14 @@ def pinching_pinky(handMesh: HandMesh) -> bool:
     dist = get_dist_3D(handMesh.pinky[2], handMesh.thumb[2])
     return dist < PINCH_DIST_INIT_THRESHOLD
 
+## Class to hold and extract gestures from a hand mesh
 class Gestures:
     
-    ## Enums
-    PINCHING_INDEX = 1
+    ## Enums to distinguish gestures in gesture dict
+    PINCHING_INDEX  = 1
     PINCHING_MIDDLE = 2
-    PINCHING_RING = 3
-    PINCHING_PINKY = 4
+    PINCHING_RING   = 3
+    PINCHING_PINKY  = 4
 
     ## init
     def __init__(self):
@@ -55,9 +56,11 @@ class Gestures:
         self.prevGestures = self.gestures
 
         ## Extract pinching
-        thumbX, thumbY, thumbZ = handMesh.thumb[2]
-        x1, y1, z1 = handMesh.index[2]
-        # self.gestures[Gestures.PINCHING_INDEX] = 
+        self.gestures = dict([])
+        self.gestures[Gestures.PINCHING_INDEX] = pinching_index(handMesh)
+        self.gestures[Gestures.PINCHING_MIDDLE] = pinching_middle(handMesh)
+        self.gestures[Gestures.PINCHING_RING] = pinching_ring(handMesh)
+        self.gestures[Gestures.PINCHING_PINKY] = pinching_pinky(handMesh)
 
 
 

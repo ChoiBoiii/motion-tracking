@@ -9,7 +9,7 @@ from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
 from Scripts.overlay import render_hand_keypoints_on_pygame_surface, render_max_threshold_on_pygame_surface, render_mouse_coord_origin
 from Scripts.window import create_window, destroy_window
-from Scripts.gestures import pinching_index, pinching_middle, pinching_pinky, pinching_ring
+from Scripts.gestures import Gestures
 
 
 ## MAIN CONFIG ## 
@@ -81,6 +81,9 @@ def main():
     ringPinched = False
     pinkyPinched = False
 
+    ## Object to hold gesture info
+    gestures = Gestures()
+
     ## Main loop
     run = True
     while run:
@@ -120,7 +123,10 @@ def main():
             ## Move
             mousePos = hand_coord_to_monitor_coord(rightHand.get_palm_center(), MONITOR_DIMENSIONS)
             
-            if pinching_index(rightHand):
+            ## Extract the gestures from the right hand's hand mesh
+            gestures.extract_gestrues(rightHand)
+
+            if gestures.gestures[Gestures.PINCHING_INDEX]:
                 if not indexPiched:
                     pyautogui.mouseDown()
                     indexPiched = True
@@ -136,7 +142,7 @@ def main():
                 # pyautogui.moveTo(newX, newY)
                 pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
 
-            if pinching_middle(rightHand):
+            if gestures.gestures[Gestures.PINCHING_MIDDLE]:
                 if not middlePinched:
                     middlePinched = True
                     print("Pinch   | Middle")
@@ -145,7 +151,7 @@ def main():
                     middlePinched = False
                     print("Unpinch | Middle")
 
-            if pinching_ring(rightHand):
+            if gestures.gestures[Gestures.PINCHING_RING]:
                 if not ringPinched:
                     ringPinched = True
                     print("Pinch   | Ring")
@@ -154,7 +160,7 @@ def main():
                     ringPinched = False
                     print("Unpinch | Ring")
 
-            if pinching_pinky(rightHand):
+            if gestures.gestures[Gestures.PINCHING_PINKY]:
                 if not pinkyPinched:
                     pinkyPinched = True
                     print("Pinch   | Pinky")
