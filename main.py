@@ -74,7 +74,7 @@ def main():
     Input = InputObj()
 
     ## Abstract mediapipe functions
-    hands=mp.solutions.holistic.Holistic(static_image_mode=True)
+    hands=mp.solutions.holistic.Holistic(static_image_mode=False)
 
     ## Object to hold gesture info
     gestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
