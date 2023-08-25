@@ -69,15 +69,15 @@ def main():
         SCREEN = create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
 
     ## Configure pyautogui
-    pyautogui.PAUSE = 0              # Pause in seconds after calls to pyautogui - Freezes whole program
-    pyautogui.FAILSAFE = False       # Disable hotcorner program exit failsafe - WARNING: Can make it impossible to exit script
+    pyautogui.PAUSE = 0         # Pause in seconds after calls to pyautogui - Freezes whole program
+    pyautogui.FAILSAFE = False  # Disable hotcorner program exit failsafe - WARNING: Can make it impossible to exit script
 
     ## Init input object for PyGame inputs
     Input = InputObj()
 
     ## Abstract mediapipe functions
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
-    hands = mp.solutions.hands.Hands(
+    mpHands = mp.solutions.hands.Hands(
         static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
     ## Object to hold gesture info
@@ -108,7 +108,7 @@ def main():
 
         ## Process frame
         frame.convert_to(ImgFormat.RGB)
-        results = hands.process(frame.img)
+        results = mpHands.process(frame.img)
         leftHand = None
         rightHand = None
         if results.multi_handedness:
@@ -133,17 +133,17 @@ def main():
 
             if gestures.is_pinching_index():
                 if not gestures.was_pinching_index():
-                    pyautogui.mouseDown()
                     print("Pinch   | Index")
+                    pyautogui.mouseDown()
                 # pyautogui.dragTo(mousePos[0], mousePos[1], button='left', duration=0)
                 # pyautogui.drag(newX - pyautogui.position()[0], newY - pyautogui.position()[1], button='left')
                 pyautogui.moveTo(mousePos[0], mousePos[1], duration=0)
             else:
                 if gestures.was_pinching_index():
-                    pyautogui.mouseUp()
                     print("Unpinch | Index")
-                # pyautogui.moveTo(newX, newY)
-                pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
+                    pyautogui.mouseUp()
+                pyautogui.moveTo(mousePos[0], mousePos[1])
+                # pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
 
             if gestures.is_pinching_middle():
                 if not gestures.was_pinching_middle():
