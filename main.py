@@ -174,7 +174,7 @@ def main():
                 run = False
 
             ## Disable image capture preview
-            if inputHandler.key_is_down('t'):
+            if inputHandler.key_is_down(pynput.keyboard.KeyCode.from_char('t')):
                 if SHOW_IMAGE_CAPTURE:
                     destroy_window()
                 SHOW_IMAGE_CAPTURE = False
