@@ -126,7 +126,7 @@ def main():
             ## Extract the gestures from the right hand's hand mesh
             gestures.extract_gestrues(rightHand)
 
-            if gestures.gestures[Gestures.PINCHING_INDEX]:
+            if gestures.is_pinching_index():
                 if not indexPiched:
                     pyautogui.mouseDown()
                     indexPiched = True
@@ -142,7 +142,7 @@ def main():
                 # pyautogui.moveTo(newX, newY)
                 pyautogui.move(mousePos[0] - pyautogui.position()[0], mousePos[1] - pyautogui.position()[1])
 
-            if gestures.gestures[Gestures.PINCHING_MIDDLE]:
+            if gestures.is_pinching_middle():
                 if not middlePinched:
                     middlePinched = True
                     print("Pinch   | Middle")
@@ -151,7 +151,7 @@ def main():
                     middlePinched = False
                     print("Unpinch | Middle")
 
-            if gestures.gestures[Gestures.PINCHING_RING]:
+            if gestures.is_pinching_ring():
                 if not ringPinched:
                     ringPinched = True
                     print("Pinch   | Ring")
@@ -160,7 +160,7 @@ def main():
                     ringPinched = False
                     print("Unpinch | Ring")
 
-            if gestures.gestures[Gestures.PINCHING_PINKY]:
+            if gestures.is_pinching_pinky():
                 if not pinkyPinched:
                     pinkyPinched = True
                     print("Pinch   | Pinky")

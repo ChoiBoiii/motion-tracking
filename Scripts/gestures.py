@@ -20,18 +20,18 @@ class Gestures:
     def __init__(self):
 
         ## Create dicts to hold and poll gestures from
-        self.prevGestures = dict([])
-        self.gestures = dict([])
+        self.__prevGestures = dict([])
+        self.__gestures = dict([])
 
         ## Add pinching gestures
-        self.prevGestures[Gestures.PINCHING_INDEX] = False
-        self.gestures[Gestures.PINCHING_INDEX] = False
-        self.prevGestures[Gestures.PINCHING_MIDDLE] = False
-        self.gestures[Gestures.PINCHING_MIDDLE] = False
-        self.prevGestures[Gestures.PINCHING_RING] = False
-        self.gestures[Gestures.PINCHING_RING] = False
-        self.prevGestures[Gestures.PINCHING_PINKY] = False
-        self.gestures[Gestures.PINCHING_PINKY] = False
+        self.__prevGestures[Gestures.PINCHING_INDEX] = False
+        self.__gestures[Gestures.PINCHING_INDEX] = False
+        self.__prevGestures[Gestures.PINCHING_MIDDLE] = False
+        self.__gestures[Gestures.PINCHING_MIDDLE] = False
+        self.__prevGestures[Gestures.PINCHING_RING] = False
+        self.__gestures[Gestures.PINCHING_RING] = False
+        self.__prevGestures[Gestures.PINCHING_PINKY] = False
+        self.__gestures[Gestures.PINCHING_PINKY] = False
 
     ## Gesture extraction helpers
     def __pinching_index(self, handMesh: HandMesh) -> bool:
@@ -54,24 +54,24 @@ class Gestures:
     def extract_gestrues(self, handMesh: HandMesh) -> None:
 
         ## Shift
-        self.prevGestures = self.gestures
+        self.__prevGestures = self.__gestures
 
         ## Extract pinching
-        self.gestures = dict([])
-        self.gestures[Gestures.PINCHING_INDEX] = self.__pinching_index(handMesh)
-        self.gestures[Gestures.PINCHING_MIDDLE] = self.__pinching_middle(handMesh)
-        self.gestures[Gestures.PINCHING_RING] = self.__pinching_ring(handMesh)
-        self.gestures[Gestures.PINCHING_PINKY] = self.__pinching_pinky(handMesh)
+        self.__gestures = dict([])
+        self.__gestures[Gestures.PINCHING_INDEX] = self.__pinching_index(handMesh)
+        self.__gestures[Gestures.PINCHING_MIDDLE] = self.__pinching_middle(handMesh)
+        self.__gestures[Gestures.PINCHING_RING] = self.__pinching_ring(handMesh)
+        self.__gestures[Gestures.PINCHING_PINKY] = self.__pinching_pinky(handMesh)
 
     ## Interface methods to get info from gesture object
     def is_pinching_index(self) -> bool:
-        return self.gestures[Gestures.PINCHING_INDEX]
+        return self.__gestures[Gestures.PINCHING_INDEX]
     def is_pinching_middle(self) -> bool:
-        return self.gestures[Gestures.PINCHING_MIDDLE]
+        return self.__gestures[Gestures.PINCHING_MIDDLE]
     def is_pinching_ring(self) -> bool:
-        return self.gestures[Gestures.PINCHING_RING]
+        return self.__gestures[Gestures.PINCHING_RING]
     def is_pinching_pinky(self) -> bool:
-        return self.gestures[Gestures.PINCHING_PINKY]
+        return self.__gestures[Gestures.PINCHING_PINKY]
 
 
 
