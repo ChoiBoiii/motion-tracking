@@ -20,6 +20,9 @@ CAM_INDEX = 0                    # The index of the camera to get input from
 PINCH_DIST_INIT_THRESHOLD = 0.05 # The distance threshold at which a pinch gesture is initiated
 PINCH_DISH_EXIT_THRESHOLD = 0.1  # The distance threshold at which a pinch gesture is exited
 
+## Keyboard hotkeying
+TOGGLE_OVERLAY_KEY = pynput.keyboard.KeyCode.from_char('t') # Key to toggle the overlay
+QUIT_PROGRAM_KEY   = pynput.keyboard.Key.esc                # Key to quit the program when pressed
 
 ## Convert hand coord to monitor coord
 def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: tuple[int, int]) -> tuple[int, int]:
@@ -158,7 +161,8 @@ def main():
             inputHandler.move_mouse(dx, dy)
         
         ## Toggle image capture preview
-        if inputHandler.key_down(pynput.keyboard.KeyCode.from_char('t')):
+
+        if inputHandler.key_down(TOGGLE_OVERLAY_KEY) and not inputHandler.prev_key_down(TOGGLE_OVERLAY_KEY):
             print("Toggling overlay")
             OVERLAY_ACTIVE = not OVERLAY_ACTIVE
             if OVERLAY_ACTIVE:
@@ -171,12 +175,9 @@ def main():
                         run = False
 
         ## Exit if escape key pressed
-        if inputHandler.key_down(pynput.keyboard.Key.esc):
+        if inputHandler.key_down(QUIT_PROGRAM_KEY):
             run = False
         
-        ##
-        print(inputHandler.keyboard.pressed)
-
         ## Render image capture
         if OVERLAY_ACTIVE:
 

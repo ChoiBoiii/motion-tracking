@@ -195,7 +195,7 @@ class Keyboard:
         return True
 
 
-    ## Desrtroy keyboard controller
+    ## Destroys the keyboard controller
     ## TODO
 
 
@@ -221,13 +221,13 @@ class Keyboard:
 
     ## Returns whether the given key is currently pressed
     def key_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return (key in self.pressed)
+        return key in self.pressed
 
 
-    ## Returns whether the given key is not currently pressed
-    def key_not_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return (key not in self.pressed)
-
+    ## Returns whether the given key was pressed last cycle
+    def prev_key_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+        return key in self.prevPressed
+    
 
     ## Deinit
     def deinit(self):
@@ -297,11 +297,11 @@ class InputHandler:
     ## Returns whether the given key is currently pressed
     def key_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return self.keyboard.key_down(key)
+    
 
-
-    ## Returns whether the given key is not currently pressed
-    def key_not_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
-        return self.keyboard.key_not_down(key)
+    ## Returns whether the given key is currently pressed
+    def prev_key_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
+        return self.keyboard.prev_key_down(key)
     
 
     ## Presses the mouse down
