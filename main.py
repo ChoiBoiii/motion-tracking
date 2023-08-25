@@ -7,7 +7,7 @@ from Scripts.input_handler import InputObj
 from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_frame
 from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
-from Scripts.overlay import render_hand_keypoints_on_pygame_surface, render_max_threshold_on_pygame_surface, render_mouse_coord_origin
+from Scripts.overlay import render_overlay
 from Scripts.window import create_window, destroy_window
 from Scripts.gestures import Gestures
 
@@ -173,24 +173,10 @@ def main():
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
 
-            ## Convert to PyGame surface
-            frame.convert_to(ImgFormat.RGB)
-            outSurf = frame_to_pygame_surface(frame)
+            ## Render and add the preview overlay to the screen display surface
+            render_overlay(SCREEN, frame, leftHand, rightHand, MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
 
-            ## Draw keypoints
-            render_hand_keypoints_on_pygame_surface(outSurf, [leftHand, rightHand])
-
-            ## Draw mouse coord origin
-            if rightHand:
-                render_mouse_coord_origin(outSurf, rightHand)
-
-            ## Draw max threshold visualiser
-            render_max_threshold_on_pygame_surface(outSurf, MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
-
-            ## Render to screen surface
-            SCREEN.blit(outSurf, (0, 0))
-
-            ## Update display
+            ## Update display (make changes take effect)
             py.display.update()
 
         # Limit framerate
