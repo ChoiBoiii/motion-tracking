@@ -2,12 +2,14 @@ from pynput import keyboard, mouse
 from typing import Union
 
 
+
 ## Flags to specify what to create on class init
 CREATE_MOUSE_CONTROLLER    = 1
 CREATE_MOUSE_LISTENER      = 2
 CREATE_KEYBOARD_CONTROLLER = 4
 CREATE_KEYBOARD_LISTENER   = 8
 CREATE_ALL = (CREATE_MOUSE_CONTROLLER | CREATE_MOUSE_LISTENER | CREATE_KEYBOARD_CONTROLLER | CREATE_KEYBOARD_LISTENER)
+
 
 
 ## Object to manage a mouse
@@ -36,6 +38,7 @@ class Mouse:
         if creationFlags & CREATE_MOUSE_LISTENER:
             self.create_mouse_listener()
 
+
     ## Creates a mouse controller
     def create_mouse_controller(self) -> bool:
         '''
@@ -54,6 +57,7 @@ class Mouse:
 
         ## Return success 
         return True
+
 
     ## Creates a mouse listener
     def create_mouse_listener(self) -> bool:
@@ -75,6 +79,7 @@ class Mouse:
         ## Return success
         return True
 
+
     ## Deinit
     def deinit(self):
         '''
@@ -88,9 +93,11 @@ class Mouse:
         ## Destroy listener
         ## TODO
 
+
     ## Returns the position of the mouse in pixels
     def get_pos(self):
         return self.controller.position
+
 
 
 ## Object to manage a keyboard
@@ -122,6 +129,7 @@ class Keyboard:
         if creationFlags & CREATE_KEYBOARD_LISTENER:
             self.create_keyboard_listener()
 
+
     ## Handle key press event
     def __handle_key_press(self, key: Union[keyboard.Key, keyboard.KeyCode, None]) -> None:
         '''
@@ -129,12 +137,14 @@ class Keyboard:
         '''
         self.pressedKeys.add(key)
 
+
     ## Called by keyboard listener when a key is released
     def __handle_key_release(self, key: Union[keyboard.Key, keyboard.KeyCode, None]) -> None:
         '''
         Called by keyboard listener when a key is released.
         '''
         self.pressedKeys.discard(key)
+
 
     ## Creates a keyboard controller
     def create_keyboard_controller(self) -> bool:
@@ -154,6 +164,7 @@ class Keyboard:
 
         ## Return success
         return True
+
 
     ## Creates a keyboard listener
     def create_keyboard_listener(self) -> bool:
@@ -177,8 +188,10 @@ class Keyboard:
         ## Return success
         return True
 
+
     ## Desrtroy keyboard controller
     ## TODO
+
 
     ## Destroys the keyboard listener
     def destroy_keyboard_listener(self) -> bool:
@@ -199,13 +212,16 @@ class Keyboard:
         ## Return success
         return True
     
+
     ## Returns whether the given key is currently pressed
     def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key in self.pressedKeys)
 
+
     ## Returns whether the given key is not currently pressed
     def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key not in self.pressedKeys)
+
 
     ## Deinit
     def deinit(self):
@@ -221,6 +237,7 @@ class Keyboard:
         self.destroy_keyboard_listener()
 
 
+
 ## Object to handle keyboard and mouse input
 class InputHandler:
 
@@ -232,6 +249,7 @@ class InputHandler:
 
         ## Create keyboard
         self.keyboard = Keyboard(creationFlags)
+
 
     ## Deinit
     def deinit(self):
@@ -246,21 +264,26 @@ class InputHandler:
         ## Destroy keyboard
         self.keyboard.deinit()
 
+
     ## Returns whether the given key is currently pressed
     def key_is_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key in self.keyboard.pressedKeys)
+
 
     ## Returns whether the given key is not currently pressed
     def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key not in self.keyboard.pressedKeys)
 
+
     ## Presses the mouse down
     def press_left_mouse(self):
         self.mouse.controller.press(mouse.Button.left)
 
+
     ## Releases the mouse
     def release_left_mouse(self):
         self.mouse.controller.release(mouse.Button.left)
+
 
     ## Moves the mouse by the given ammount
     def move_mouse(self, dx: Union[int, float], dy: Union[int, float]):
@@ -270,10 +293,10 @@ class InputHandler:
         '''
         self.mouse.controller.move(dx, dy)
 
+
     ## Returns the position of the mouse in pixels
     def get_mouse_pos(self):
         return self.mouse.get_pos()
     
 
 
-    
