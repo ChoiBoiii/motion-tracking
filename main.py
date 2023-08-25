@@ -10,8 +10,8 @@ from Scripts.overlay import render_overlay
 from Scripts.window import create_window, destroy_window
 from Scripts.gestures import Gestures
 from pynput import keyboard, mouse
+from Scripts.input import InputHandler
 import pynput
-from typing import Union
 
 
 ## MAIN CONFIG ## 
@@ -53,30 +53,6 @@ def process_frame(handsFunction, frame: Image) -> tuple[HandMesh, HandMesh]:
     return leftHand,rightHand
 
 
-def on_press(key: Union[keyboard.Key, keyboard.KeyCode, None]) -> None:
-    try:
-        if type(key) == keyboard.KeyCode:
-            if key.char == 't':
-                print("Press TOGGLE")
-        else:
-            if key == keyboard.Key.esc:
-                print("Press ESCAPE")
-    except Exception as e:
-        print("ERROR: Problem parsing keyboard input:")
-        print(e)
-
-def on_release(key: Union[keyboard.Key, keyboard.KeyCode, None]) -> None:
-    try:
-        if type(key) == keyboard.KeyCode:
-            if key.char == 't':
-                print("Release TOGGLE")
-        else:
-            if key == keyboard.Key.esc:
-                print("Release ESCAPE")
-    except Exception as e:
-        print("ERROR: Problem parsing keyboard input:")
-        print(e)
-
 
 ## MAIN
 def main():
@@ -114,6 +90,7 @@ def main():
 
     ## Init input object for PyGame inputs
     Input = PygameInputObj()
+    inputHandler = InputHandler(creationFlags=(InputHandler.MOUSE_CONTROLLER | InputHandler.KEYBOARD_LISTENER))
 
     ## Abstract mediapipe functions
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
@@ -122,11 +99,6 @@ def main():
 
     ## Object to hold gesture info
     gestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
-
-    ## TEST
-    mouseController = mouse.Controller()
-    keyboardListener = keyboard.Listener(on_press=on_press, on_release=on_release)
-    keyboardListener.start()
 
     ## Main loop
     run = True
@@ -149,11 +121,11 @@ def main():
         if gestures.is_pinching_index():
             if not gestures.was_pinching_index():
                 print("Pinch   | Index")
-                mouseController.press(mouse.Button.left)
+                inputHandler.mouseController.press(mouse.Button.left)
         else:
             if gestures.was_pinching_index():
                 print("Unpinch | Index")
-                mouseController.release(mouse.Button.left)
+                inputHandler.mouseController.release(mouse.Button.left)
 
         if gestures.is_pinching_middle():
             if not gestures.was_pinching_middle():
@@ -178,14 +150,17 @@ def main():
         
         ## Move mouse
         if dominantHand:
-            currPos = mouseController.position
+            currPos = inputHandler.mouseController.position
             destPos = hand_coord_to_monitor_coord(dominantHand.get_palm_center(), MONITOR_DIMENSIONS)
             dx = destPos[0] - currPos[0]
             dy = destPos[1] - currPos[1]
-            mouseController.move(dx, dy)
+            inputHandler.mouseController.move(dx, dy)
         
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
+
+            ## DEBUG
+            print(inputHandler.pressedKeys)
 
             ## Render and add the preview overlay to the screen display surface
             render_overlay(SCREEN, frame, [leftHand, rightHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
@@ -201,8 +176,12 @@ def main():
             ## Get input from keyboard and mouse
             Input.handleGettingInput()
 
+            ## Exit if escape key pressed
+            if pynput.keyboard.Key.esc in inputHandler.pressedKeys:
+                run = False
+
             ## Handle exit case
-            if Input.quitButtonPressed:# or Input.keys[py.K_ESCAPE]:
+            if Input.quitButtonPressed:
                 run = False
 
             ## Disable image capture preview
@@ -221,7 +200,7 @@ def main():
     cam.release()
 
     ## Stop the keyboard listener
-    keyboardListener.stop()
+    inputHandler.destroy_keyboard_listener()
 
 
 ## RUN

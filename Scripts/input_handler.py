@@ -60,28 +60,5 @@ class PygameInputObj: # <- Class for mouse and keyboard input
                 self.quitButtonPressed = True
 
 
-    '''
-    ## FUNCTION TO DEDUCE MOUSE MOVEMENT VALUES
-    def positional_values(self, currentPos, prevPos): # <- Relative to current frame
-        
-        ## CALCULATE MOVEMENT AND ASSIGN PREV/CURRENT MOUSE POS
-        px1, py1 = currentPos
-        px2, py2 = prevPos
-        movement = (px1-px2, py1-py2)
-        prevPos  = currentPos
 
-        ## RETURN
-        return currentPos, prevPos, movement
 
-    ## FUNCTION TO HANDLE INPUT (PUT IN MAINLINE)
-    def handleGettingInput(self):
-
-        ## HANDLE KEYBOARD INPUT
-        self.prevKeys = self.keys
-        self.keys = py.key.get_pressed()
-
-        ## HANDLE MOUSE INPUT
-        self.B1, self.B2, self.B3 = py.mouse.get_pressed()
-        self.currentPos, self.prevPos, self.movement = self.positional_values(py.mouse.get_pos(), self.prevPos)
-        self.leftClick, self.rightClick = False, False
-    '''
