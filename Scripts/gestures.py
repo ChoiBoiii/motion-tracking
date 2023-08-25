@@ -1,8 +1,8 @@
 from .hands import HandMesh
 from .math import get_dist_3D
 
-PINCH_DIST_INIT_THRESHOLD = 0.04
-PINCH_DISH_EXIT_THRESHOLD = 0.2
+PINCH_DIST_INIT_THRESHOLD = 0.05
+PINCH_DISH_EXIT_THRESHOLD = 0.1
 
 ## Class to hold and extract gestures from a hand mesh
 class Gestures:
@@ -14,7 +14,13 @@ class Gestures:
     PINCHING_PINKY  = 4
 
     ## init
-    def __init__(self):
+    def __init__(self, 
+                 pinchInitThreshold=PINCH_DIST_INIT_THRESHOLD, 
+                 pinchExitThreshold=PINCH_DISH_EXIT_THRESHOLD):
+
+        ## Save config variables
+        self.pinchInitThreshold = pinchInitThreshold
+        self.pinchExitThreshold = pinchExitThreshold
 
         ## Create dicts to hold and poll gestures from
         self.__prevGestures = dict([])
@@ -58,19 +64,19 @@ class Gestures:
     ## Gesture extraction helpers
     def __pinching_index(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.index[-1], handMesh.thumb[-1])
-        return dist < PINCH_DISH_EXIT_THRESHOLD if self.was_pinching_index() else dist < PINCH_DIST_INIT_THRESHOLD
+        return dist < self.pinchExitThreshold if self.was_pinching_index() else dist < self.pinchInitThreshold
 
     def __pinching_middle(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.middle[-1], handMesh.thumb[-1])
-        return dist < PINCH_DISH_EXIT_THRESHOLD if self.was_pinching_middle() else dist < PINCH_DIST_INIT_THRESHOLD
+        return dist < self.pinchExitThreshold if self.was_pinching_middle() else dist < self.pinchInitThreshold
 
     def __pinching_ring(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.ring[-1], handMesh.thumb[-1])
-        return dist < PINCH_DISH_EXIT_THRESHOLD if self.was_pinching_ring() else dist < PINCH_DIST_INIT_THRESHOLD
+        return dist < self.pinchExitThreshold if self.was_pinching_ring() else dist < self.pinchInitThreshold
 
     def __pinching_pinky(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.pinky[-1], handMesh.thumb[-1])
-        return dist < PINCH_DISH_EXIT_THRESHOLD if self.was_pinching_pinky() else dist < PINCH_DIST_INIT_THRESHOLD
+        return dist < self.pinchExitThreshold if self.was_pinching_pinky() else dist < self.pinchInitThreshold
 
     ## Extract gestures from a hand mesh
     def extract_gestrues(self, handMesh: HandMesh) -> None:
