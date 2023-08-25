@@ -120,11 +120,11 @@ def main():
         if gestures.is_pinching_index():
             if not gestures.was_pinching_index():
                 print("Pinch   | Index")
-                inputHandler.mouse.controller.press(mouse.Button.left)
+                inputHandler.press_left_mouse()
         else:
             if gestures.was_pinching_index():
                 print("Unpinch | Index")
-                inputHandler.mouse.controller.release(mouse.Button.left)
+                inputHandler.release_left_mouse()
 
         if gestures.is_pinching_middle():
             if not gestures.was_pinching_middle():
@@ -149,11 +149,11 @@ def main():
         
         ## Move mouse
         if dominantHand:
-            currPos = inputHandler.mouse.controller.position
+            currPos = inputHandler.get_mouse_pos()
             destPos = hand_coord_to_monitor_coord(dominantHand.get_palm_center(), MONITOR_DIMENSIONS)
             dx = destPos[0] - currPos[0]
             dy = destPos[1] - currPos[1]
-            inputHandler.mouse.controller.move(dx, dy)
+            inputHandler.move_mouse(dx, dy)
         
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:

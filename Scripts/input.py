@@ -88,6 +88,10 @@ class Mouse:
         ## Destroy listener
         ## TODO
 
+    ## Returns the position of the mouse in pixels
+    def get_pos(self):
+        return self.controller.position
+
 
 ## Object to manage a keyboard
 class Keyboard:
@@ -250,3 +254,26 @@ class InputHandler:
     def key_is_now_down(self, key: Union[keyboard.Key, keyboard.KeyCode]) -> bool:
         return (key not in self.keyboard.pressedKeys)
 
+    ## Presses the mouse down
+    def press_left_mouse(self):
+        self.mouse.controller.press(mouse.Button.left)
+
+    ## Releases the mouse
+    def release_left_mouse(self):
+        self.mouse.controller.release(mouse.Button.left)
+
+    ## Moves the mouse by the given ammount
+    def move_mouse(self, dx: Union[int, float], dy: Union[int, float]):
+        '''
+        DESCRIPTION
+        Moves the mouse by the given ammount (in pixels) relative to its position at time of calling.
+        '''
+        self.mouse.controller.move(dx, dy)
+
+    ## Returns the position of the mouse in pixels
+    def get_mouse_pos(self):
+        return self.mouse.get_pos()
+    
+
+
+    
