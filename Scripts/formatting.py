@@ -67,26 +67,24 @@ class Image:
         return
         
 
-## CONVERTS THE GIVEN FRAME TO A PYGAME SURFACE
-def frame_to_pygame_surface(frame: Image) -> py.Surface:
+    ## CONVERTS THE GIVEN FRAME TO A PYGAME SURFACE
+    def get_pygame_surf(self) -> py.Surface:
 
-    ## CONVERT COLOUR FORMAT TO MATCH PYGAME SURFACE
-    frame.convert_to(ImgFormat.RGB)
+        ## CONVERT COLOUR FORMAT TO MATCH PYGAME SURFACE
+        self.convert_to(ImgFormat.RGB)
 
-    ## RECTIFY IMAGE ORIENTATION
-    frame.img = np.rot90(frame.img)
+        ## RECTIFY IMAGE ORIENTATION
+        self.img = np.rot90(self.img)
 
-    ## CREATE PYGAME SURFACE FROM OPENCV FRAME
-    surf = py.surfarray.make_surface(frame.img)
+        ## CREATE PYGAME SURFACE FROM OPENCV FRAME
+        surf = py.surfarray.make_surface(self.img)
 
-    ## RETURN
-    return surf
+        ## RETURN
+        return surf
 
 
-## SCALES THE FRAME USING THE GIVEN MULTIPLIER
-def scale_frame(frame: Image, scaleModifier: float) -> None:
-    frame.img = cv2.resize(frame.img, None, 
-                           fx=scaleModifier, fy=scaleModifier, 
-                           interpolation=cv2.INTER_AREA)
+    ## SCALES THE FRAME USING THE GIVEN MULTIPLIER
+    def scale(self, scaleModifier: float) -> None:
+        self.img = cv2.resize(self.img, None, fx=scaleModifier, fy=scaleModifier, interpolation=cv2.INTER_AREA)
 
 

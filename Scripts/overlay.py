@@ -1,7 +1,6 @@
 import pygame as py
 from typing import Union
 from .hands import HandMesh, HandType
-from .formatting import frame_to_pygame_surface
 from .formatting import Image
 
 
@@ -57,7 +56,7 @@ def render_overlay(dispaySurface: py.Surface, frame: Image, hands: list[HandMesh
                    maxInputThresholdX: float, maxInputThresholdY: float) -> None:
     
     ## Convert to PyGame surface
-    outSurf = frame_to_pygame_surface(frame)
+    outSurf = frame.get_pygame_surf()
 
     ## Draw keypoints
     render_hand_keypoints_on_pygame_surface(outSurf, hands)

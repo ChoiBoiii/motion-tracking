@@ -4,7 +4,7 @@ import pygame as py
 import mediapipe as mp
 import pyautogui
 from Scripts.input_handler import InputObj
-from Scripts.formatting import Image, ImgFormat, frame_to_pygame_surface, scale_frame
+from Scripts.formatting import Image, ImgFormat
 from Scripts.camera import bind_cam, get_cam_frame
 from Scripts.hands import HandMesh, HandType
 from Scripts.overlay import render_overlay
@@ -105,7 +105,7 @@ def main():
         frame = get_cam_frame(cam)
 
         ## Reduce image resolution for optimisation
-        scale_frame(frame, IMAGE_REDUCTION_SCALE)
+        frame.scale(IMAGE_REDUCTION_SCALE)
 
         ## Process frame
         frame.convert_to(ImgFormat.RGB)
