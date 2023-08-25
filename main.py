@@ -51,6 +51,12 @@ def process_frame(handsFunction, frame: Image) -> tuple[HandMesh, HandMesh]:
     return leftHand,rightHand
 
 
+def on_press(key):
+    pass
+def on_release(key):
+    pass
+
+
 ## MAIN
 def main():
 
@@ -97,7 +103,9 @@ def main():
     gestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
 
     ## TEST
-    ms = mouse.Controller()
+    mouseController = mouse.Controller()
+    keyboardListener = keyboard.Listener(on_press=on_press, on_release=on_release)
+    keyboardListener.start()
 
     ## Main loop
     run = True
@@ -120,11 +128,11 @@ def main():
         if gestures.is_pinching_index():
             if not gestures.was_pinching_index():
                 print("Pinch   | Index")
-                ms.press(mouse.Button.left)
+                mouseController.press(mouse.Button.left)
         else:
             if gestures.was_pinching_index():
                 print("Unpinch | Index")
-                ms.release(mouse.Button.left)
+                mouseController.release(mouse.Button.left)
 
         if gestures.is_pinching_middle():
             if not gestures.was_pinching_middle():
@@ -149,11 +157,11 @@ def main():
         
         ## Move mouse
         if dominantHand:
-            currPos = ms.position
+            currPos = mouseController.position
             destPos = hand_coord_to_monitor_coord(dominantHand.get_palm_center(), MONITOR_DIMENSIONS)
             dx = destPos[0] - currPos[0]
             dy = destPos[1] - currPos[1]
-            ms.move(dx, dy)
+            mouseController.move(dx, dy)
         
         ## Render image capture
         if SHOW_IMAGE_CAPTURE:
@@ -163,6 +171,11 @@ def main():
 
             ## Update display (make changes take effect)
             py.display.update()
+
+            # ## 
+            # for event in py.event.get():
+            #     if event.type == py.QUIT:
+            #         run = False
 
             ## Get input from keyboard and mouse
             Input.handleGettingInput()
@@ -185,6 +198,9 @@ def main():
 
     ## Free camera
     cam.release()
+
+    ## Stop the keyboard listener
+    keyboardListener.stop()
 
 
 ## RUN
