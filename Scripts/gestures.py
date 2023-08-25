@@ -30,22 +30,47 @@ class Gestures:
         self.__prevGestures[Gestures.PINCHING_PINKY] = False
         self.__gestures[Gestures.PINCHING_PINKY] = False
 
+    ## Interface methods to get info from gesture object
+    def is_pinching_index(self) -> bool:
+        return self.__gestures[Gestures.PINCHING_INDEX]
+    
+    def is_pinching_middle(self) -> bool:
+        return self.__gestures[Gestures.PINCHING_MIDDLE]
+    
+    def is_pinching_ring(self) -> bool:
+        return self.__gestures[Gestures.PINCHING_RING]
+    
+    def is_pinching_pinky(self) -> bool:
+        return self.__gestures[Gestures.PINCHING_PINKY]
+    
+    def was_pinching_index(self) -> bool:
+        return self.__prevGestures[Gestures.PINCHING_INDEX]
+    
+    def was_pinching_middle(self) -> bool:
+        return self.__prevGestures[Gestures.PINCHING_MIDDLE]
+    
+    def was_pinching_ring(self) -> bool:
+        return self.__prevGestures[Gestures.PINCHING_RING]
+    
+    def was_pinching_pinky(self) -> bool:
+        return self.__prevGestures[Gestures.PINCHING_PINKY]
+    
     ## Gesture extraction helpers
     def __pinching_index(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.index[-1], handMesh.thumb[-1])
-        return dist < PINCH_DIST_INIT_THRESHOLD
+        return dist < PINCH_DISH_EXIT_THRESHOLD if self.was_pinching_index() else dist < PINCH_DIST_INIT_THRESHOLD
 
     def __pinching_middle(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.middle[-1], handMesh.thumb[-1])
-        return dist < PINCH_DIST_INIT_THRESHOLD
+        return dist < PINCH_DISH_EXIT_THRESHOLD if self.was_pinching_middle() else dist < PINCH_DIST_INIT_THRESHOLD
 
     def __pinching_ring(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.ring[-1], handMesh.thumb[-1])
-        return dist < PINCH_DIST_INIT_THRESHOLD
+        return dist < PINCH_DISH_EXIT_THRESHOLD if self.was_pinching_ring() else dist < PINCH_DIST_INIT_THRESHOLD
 
     def __pinching_pinky(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.pinky[-1], handMesh.thumb[-1])
-        return dist < PINCH_DIST_INIT_THRESHOLD
+        return dist < PINCH_DISH_EXIT_THRESHOLD if self.was_pinching_pinky() else dist < PINCH_DIST_INIT_THRESHOLD
 
     ## Extract gestures from a hand mesh
     def extract_gestrues(self, handMesh: HandMesh) -> None:
@@ -60,15 +85,6 @@ class Gestures:
         self.__gestures[Gestures.PINCHING_RING] = self.__pinching_ring(handMesh)
         self.__gestures[Gestures.PINCHING_PINKY] = self.__pinching_pinky(handMesh)
 
-    ## Interface methods to get info from gesture object
-    def is_pinching_index(self) -> bool:
-        return self.__gestures[Gestures.PINCHING_INDEX]
-    def is_pinching_middle(self) -> bool:
-        return self.__gestures[Gestures.PINCHING_MIDDLE]
-    def is_pinching_ring(self) -> bool:
-        return self.__gestures[Gestures.PINCHING_RING]
-    def is_pinching_pinky(self) -> bool:
-        return self.__gestures[Gestures.PINCHING_PINKY]
 
 
 
