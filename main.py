@@ -4,7 +4,7 @@ import pygame as py
 import mediapipe as mp
 from Scripts import camera
 from Scripts import hands
-from Scripts import interface 
+from Scripts import devices 
 from Scripts.gestures import Gestures
 from Scripts.overlay import Overlay
 
@@ -42,7 +42,7 @@ def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: t
 
 
 ## Moves the mouse using the given hand
-def move_hand(deviceHandler: interface, handGesdtures: Gestures, monitorDimensions: tuple[int, int]) -> None:
+def move_hand(deviceHandler: devices, handGesdtures: Gestures, monitorDimensions: tuple[int, int]) -> None:
         currPos = deviceHandler.get_mouse_pos()
         destPos = hand_coord_to_monitor_coord(handGesdtures.centerPalm, monitorDimensions)
         dx = destPos[0] - currPos[0]
@@ -87,7 +87,7 @@ def main():
     offhandGestues = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
 
     ## Init input object for PyGame inputs
-    deviceHandler = interface.DeviceHandler(creationFlags=(interface.CREATE_MOUSE_CONTROLLER | interface.CREATE_KEYBOARD_LISTENER))
+    deviceHandler = devices.DeviceHandler(creationFlags=(devices.CREATE_MOUSE_CONTROLLER | devices.CREATE_KEYBOARD_LISTENER))
 
     ## Main loop
     run = True
@@ -128,10 +128,11 @@ def main():
         
         ## Offhand controls - Mouse scroll
         if offhandGestues.is_pinching_index():
-            dx = (offhandGestues.centerPalm[0] - offhandGestues.prevCenterPalm[0]) * SCROLL_SPEED
-            dy = (offhandGestues.centerPalm[1] - offhandGestues.prevCenterPalm[1]) * SCROLL_SPEED
-            print("SCROLL |", dx, dy)
-            deviceHandler.mouse.scroll(dx, dy)
+            if offhandGestues.prevCenterPalm:
+                dx = (offhandGestues.centerPalm[0] - offhandGestues.prevCenterPalm[0]) * SCROLL_SPEED
+                dy = (offhandGestues.centerPalm[1] - offhandGestues.prevCenterPalm[1]) * SCROLL_SPEED
+                deviceHandler.mouse.scroll(dx, dy)
+                print("SCROLL |", dx, dy)
 
         ## Move mouse
         if dominantHand:
