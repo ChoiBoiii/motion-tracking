@@ -1,75 +1,122 @@
 import pygame as py
 from typing import Union
-from .hands import HandMesh, HandType
+from .hands import HandMesh
 from .formatting import Image
+from .window import create_window, destroy_window
 
 
-## Converts the given point from hand coords to pixel coords
-def convert_hand_coord_to_pixel_coord(coord: tuple[int, int, int], surfaceDimensions: tuple[int, int]) -> tuple[int, int]:
-    return (surfaceDimensions[0] * (1 - coord[0]), coord[1] * surfaceDimensions[1])
+class Overlay:
+
+    ## Init
+    def __init__(self, windowName: str, windowDimensions: tuple[int, int], creationFlags: int):
+
+        ## Save config attributess
+        self.name = windowName
+        self.dimensions = windowDimensions
+        self.flags = creationFlags
+        
+        ## Var to store surface used to render to the overlay
+        self.surface = None
+        self.active = True # Whether the overlay is currently active
 
 
-## Render the keypoints from given meshes on the given pygame surface
-def render_hand_keypoints_on_pygame_surface(pygameSurface: py.Surface, handMeshes: Union[HandMesh, list[HandMesh]]) -> None:
-    '''
-    Renders the keypoints from the given hand meshes on the given pygame surface.
-    Mesh coordinates are interpreted as [0, 1] normalised coordinates, which are then
-    multiplied by the widht or heigh of the screen to give the pixel coordiate of the 
-    resulting dot render.
-    '''
+    ## Create overlay window
+    def create_window(self) -> None:
 
-    ## Ensure hands are in a list
-    if type(handMeshes) == HandMesh:
-        handMeshes = [handMeshes]
+        ## Create window and get surface
+        self.surface = create_window(self.name, self.dimensions, self.flags)
 
-    ## Draw keypoints
-    surfWidth, surfHeight = pygameSurface.get_size()
-    for hand in handMeshes:
-        if hand:
-            for x, y, _ in hand.allKeypoints:
-                pxPos = convert_hand_coord_to_pixel_coord((x, y), (surfWidth, surfHeight))
-                if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
-                    if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
-                        py.draw.circle(pygameSurface, (0,255,0), pxPos, 3)
+        ## Get window dimensions
+        self.dimensions = self.surface.get_size()
+
+        ## Set to active
+        self.active = True
 
 
-## Renders the threshold at which mouse coords are maxed
-def render_max_threshold_on_pygame_surface(pygameSurface: py.Surface, thresholdX: int, thresholdY: int) -> None:
-    surfWidth, surfHeight = pygameSurface.get_size()
-    py.draw.rect(pygameSurface, (255,255,0), 
-                    (surfWidth / 2 * (1 - thresholdX), surfHeight / 2 * (1 - thresholdY), 
-                    surfWidth * thresholdX, surfHeight * thresholdY), 2)
+    ## Destroy overlay window
+    def destroy_window(self) -> None:
+
+        ## Destroy window
+        destroy_window()
+        
+        ## Clear PyGame event queue to allow screen to update
+        py.event.get()
+
+        ## Remove attached surface
+        self.surface = None
+
+        ## Set window dimensions to null
+        self.dimensions = (0, 0)
+
+        ## Set active to false
+        self.active = False
 
 
-## Renders the position of the mouse coord origin
-def render_mouse_coord_origin(pygameSurface: py.Surface, handMesh: HandMesh) -> None:
-    surfWidth, surfHeight = pygameSurface.get_size()
-    x, y, _ = handMesh.get_palm_center()
-    pxPos = convert_hand_coord_to_pixel_coord((x, y), (surfWidth, surfHeight))
-    if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
-        if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
-            py.draw.circle(pygameSurface, (255, 0, 0), pxPos, 2)
+    ## Converts the given point from hand coords to pixel coords
+    def convert_hand_coord_to_pixel_coord(self, x: int, y: int) -> tuple[int, int]:
+        return (self.dimensions[0] * (1 - x), y * self.dimensions[1])
 
 
-## SCREEN, frame, leftHand, rightHand, MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y
-def render_overlay(dispaySurface: py.Surface, frame: Image, hands: list[HandMesh], 
-                   maxInputThresholdX: float, maxInputThresholdY: float) -> None:
-    
-    ## Convert to PyGame surface
-    outSurf = frame.get_pygame_surf()
+    ## Render the keypoints from given meshes on the given pygame surface
+    def render_hand_keypoints(self, handMeshes: Union[HandMesh, list[HandMesh]]) -> None:
+        '''
+        Renders the keypoints from the given hand meshes on the given pygame surface.
+        Mesh coordinates are interpreted as [0, 1] normalised coordinates, which are then
+        multiplied by the widht or heigh of the screen to give the pixel coordiate of the 
+        resulting dot render.
+        '''
 
-    ## Draw keypoints
-    render_hand_keypoints_on_pygame_surface(outSurf, hands)
+        ## Ensure hands are in a list
+        if type(handMeshes) == HandMesh:
+            handMeshes = [handMeshes]
 
-    ## Draw mouse coord origin
-    if hands[1]:
-        render_mouse_coord_origin(outSurf, hands[1])
+        ## Draw keypoints
+        for hand in handMeshes:
+            if hand:
+                for x, y, _ in hand.allKeypoints:
+                    pxPos = self.convert_hand_coord_to_pixel_coord(x, y)
+                    if (pxPos[0] >= 0 and pxPos[0] <= self.dimensions[0]):
+                        if (pxPos[1] >= 0 and pxPos[1] <= self.dimensions[1]):
+                            py.draw.circle(self.surface, (0,255,0), pxPos, 3)
 
-    ## Draw max threshold visualiser
-    render_max_threshold_on_pygame_surface(outSurf, maxInputThresholdX, maxInputThresholdY)
 
-    ## Render to screen surface
-    dispaySurface.blit(outSurf, (0, 0))
+    ## Renders the threshold at which mouse coords are maxed
+    def render_max_threshold(self, thresholdX: int, thresholdY: int) -> None:
+        surfWidth, surfHeight = self.surface.get_size()
+        py.draw.rect(self.surface, (255,255,0), 
+                        (surfWidth / 2 * (1 - thresholdX), surfHeight / 2 * (1 - thresholdY), 
+                        surfWidth * thresholdX, surfHeight * thresholdY), 2)
+
+
+    ## Renders the position of the mouse coord origin
+    def render_mouse_coord_origin(self, handMesh: HandMesh) -> None:
+        surfWidth, surfHeight = self.surface.get_size()
+        x, y, _ = handMesh.get_palm_center()
+        pxPos = self.convert_hand_coord_to_pixel_coord(x, y)
+        if (pxPos[0] >= 0 and pxPos[0] <= surfWidth):
+            if (pxPos[1] >= 0 and pxPos[1] <= surfHeight):
+                py.draw.circle(self.surface, (255, 0, 0), pxPos, 2)
+
+
+    ## SCREEN, frame, leftHand, rightHand, MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y
+    def render(self, frame: Image, hands: list[HandMesh], 
+                    maxInputThresholdX: float, maxInputThresholdY: float) -> None:
+        
+        ## Convert to PyGame surface
+        outSurf = frame.get_pygame_surf()
+
+        ## Add to screen
+        self.surface.blit(outSurf, (0, 0))
+
+        ## Draw keypoints
+        self.render_hand_keypoints(hands)
+
+        ## Draw mouse coord origin
+        if hands[1]:
+            self.render_mouse_coord_origin(hands[1])
+
+        ## Draw max threshold visualiser
+        self.render_max_threshold(maxInputThresholdX, maxInputThresholdY)
 
 
 

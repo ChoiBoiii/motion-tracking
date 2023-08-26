@@ -2,12 +2,11 @@
 import pynput
 import pygame as py
 import mediapipe as mp
-from Scripts import window
 from Scripts import camera
 from Scripts import hands
 from Scripts import interface 
-from Scripts.overlay import render_overlay
 from Scripts.gestures import Gestures
+from Scripts.overlay import Overlay
 
 
 ## MAIN CONFIG ## 
@@ -25,7 +24,7 @@ WINDOW_FLAGS = 0                   # The flags to create the PyGame window with
 MAX_FPS = 60                       # The FPS cap of the main loop
 # ^ py.FULLSCREEN | py.NOFRAME | py.RESIZEABLE | py.HWSURFACE | py.DOUBLEBUF
 
-## Keyboard hotkeying
+## Keyboard keybinding
 TOGGLE_OVERLAY_KEY = pynput.keyboard.KeyCode.from_char('t') # Key to toggle the overlay
 QUIT_PROGRAM_KEY   = pynput.keyboard.Key.esc                # Key to quit the program when pressed
 
@@ -40,6 +39,7 @@ def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: t
     monitorY = monitorDimensions[1] * adjustedY
     return (monitorX, monitorY)
 
+
 ## Moves the mouse using the given hand
 def move_hand(deviceHandler: interface, hand: hands.HandMesh, monitorDimensions: tuple[int, int]) -> None:
         currPos = deviceHandler.get_mouse_pos()
@@ -47,6 +47,7 @@ def move_hand(deviceHandler: interface, hand: hands.HandMesh, monitorDimensions:
         dx = destPos[0] - currPos[0]
         dy = destPos[1] - currPos[1]
         deviceHandler.move_mouse(dx, dy)
+
 
 ## MAIN
 def main():
@@ -74,11 +75,10 @@ def main():
     WINDOW_DIMENSIONS = (WINDOW_WIDTH, WINDOW_HEIGHT)
     print(f"Window dimensions (px): [{WINDOW_WIDTH}, {WINDOW_HEIGHT}]")
 
-    ## Handle PyGame window
-    create_overlay = lambda : window.create_window(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
-    destroy_overlay = lambda : window.destroy_window()
+    ## Handle overlay
+    overlay = Overlay(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
     if overlayActive:
-        SCREEN = create_overlay()
+        overlay.create_window()
 
     ## Attach mediapipe hands extraction function
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
@@ -142,14 +142,7 @@ def main():
         if deviceHandler.key_down(TOGGLE_OVERLAY_KEY) and not deviceHandler.prev_key_down(TOGGLE_OVERLAY_KEY):
             print("Toggling overlay")
             overlayActive = not overlayActive
-            if overlayActive:
-                SCREEN = create_overlay()
-            else:
-                destroy_overlay()
-                ## Clear PyGame event queue to allow screen to update
-                for event in py.event.get():
-                    if event.type == py.QUIT:
-                        run = False
+            overlay.create_window() if overlayActive else overlay.destroy_window()
 
         ## Exit if escape key pressed
         if deviceHandler.key_down(QUIT_PROGRAM_KEY):
@@ -159,7 +152,7 @@ def main():
         if overlayActive:
 
             ## Render and add the preview overlay to the screen display surface
-            render_overlay(SCREEN, frame, [offHand, dominantHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
+            overlay.render(frame, [offHand, dominantHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
 
             ## Update display (make changes take effect)
             py.display.update()
