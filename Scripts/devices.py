@@ -282,6 +282,10 @@ class DeviceHandler:
         ## Create keyboard
         self.keyboard = Keyboard(creationFlags)
 
+        ## Tally of scroll for each session
+        self.__scrollRemainderX = 0.0
+        self.__scrollRemainderY = 0.0
+
 
     ## Deinit
     def deinit(self):
@@ -349,4 +353,30 @@ class DeviceHandler:
 
         ## Cycle keyboard
         self.keyboard.cycle()
+
+
+    ## Apply scroll
+    def scroll(self, x: Union[int, float], y: Union[int, float]) -> None:
+
+        self.__scrollRemainderX += x
+        self.__scrollRemainderY += y
+        
+        dx = int(self.__scrollRemainderX)
+        dy = int(self.__scrollRemainderY)    
+
+        self.__scrollRemainderX -= dx
+        self.__scrollRemainderY -= dy
+
+        self.mouse.scroll(dx, dy)
+
+
+    ## Resets the scroll tallies
+    def end_scroll_session(self) -> None:
+
+        ## Reset tally of scroll for each session
+        self.__scrollRemainderX = 0.0
+        self.__scrollRemainderY = 0.0
+
+
+
 
