@@ -8,7 +8,7 @@ from .window import create_window, destroy_window
 class Overlay:
 
     ## Init
-    def __init__(self, windowName: str, windowDimensions: tuple[int, int], creationFlags: int):
+    def __init__(self, windowName: str, windowDimensions: tuple[int, int], creationFlags: int, startActive: bool=True):
 
         ## Save config attributess
         self.name = windowName
@@ -17,7 +17,11 @@ class Overlay:
         
         ## Var to store surface used to render to the overlay
         self.surface = None
-        self.active = True # Whether the overlay is currently active
+        self.active = startActive
+
+        ## Create overlay window if specified
+        if self.active:
+            self.create_window()
 
 
     ## Create overlay window
@@ -45,11 +49,14 @@ class Overlay:
         ## Remove attached surface
         self.surface = None
 
-        ## Set window dimensions to null
-        self.dimensions = (0, 0)
-
         ## Set active to false
         self.active = False
+
+
+    ## Toggle the overlay on / off
+    def toggle(self) -> None:
+        self.active = not self.active
+        self.create_window() if self.active else self.destroy_window()
 
 
     ## Converts the given point from hand coords to pixel coords

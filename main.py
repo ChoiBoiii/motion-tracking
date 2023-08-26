@@ -52,9 +52,6 @@ def move_hand(deviceHandler: interface, hand: hands.HandMesh, monitorDimensions:
 ## MAIN
 def main():
 
-    # Whether to start with the overlay active
-    overlayActive = True 
-
     ## Open webcam and bind input
     cam = camera.Camera(CAM_INDEX)
 
@@ -76,9 +73,7 @@ def main():
     print(f"Window dimensions (px): [{WINDOW_WIDTH}, {WINDOW_HEIGHT}]")
 
     ## Handle overlay
-    overlay = Overlay(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS)
-    if overlayActive:
-        overlay.create_window()
+    overlay = Overlay(WINDOW_NAME, WINDOW_DIMENSIONS, WINDOW_FLAGS, startActive=True)
 
     ## Attach mediapipe hands extraction function
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
@@ -140,16 +135,15 @@ def main():
 
         ## Toggle image capture preview
         if deviceHandler.key_down(TOGGLE_OVERLAY_KEY) and not deviceHandler.prev_key_down(TOGGLE_OVERLAY_KEY):
-            print("Toggling overlay")
-            overlayActive = not overlayActive
-            overlay.create_window() if overlayActive else overlay.destroy_window()
+            print(f"Toggling overlay {'off' if overlay.active else 'on'}")
+            overlay.toggle()
 
         ## Exit if escape key pressed
         if deviceHandler.key_down(QUIT_PROGRAM_KEY):
             run = False
         
         ## Render image capture
-        if overlayActive:
+        if overlay.active:
 
             ## Render and add the preview overlay to the screen display surface
             overlay.render(frame, [offHand, dominantHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
