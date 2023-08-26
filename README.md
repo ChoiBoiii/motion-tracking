@@ -1,5 +1,5 @@
 # motion-tracking
  
 ## Controls
-* `[T]` - Disable the image capture preview window
+* `[T]` - Toggle the motion capture preview window on/off
 * `[ESC]` - Exit the program
