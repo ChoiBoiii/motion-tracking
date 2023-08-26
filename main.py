@@ -132,7 +132,6 @@ def main():
                 dx = (offhandGestues.centerPalm[0] - offhandGestues.prevCenterPalm[0]) * SCROLL_SPEED
                 dy = (offhandGestues.centerPalm[1] - offhandGestues.prevCenterPalm[1]) * SCROLL_SPEED
                 deviceHandler.scroll(dx, dy)
-                print("SCROLL |", dx, dy)
 
         ## Move mouse
         if dominantHand:
