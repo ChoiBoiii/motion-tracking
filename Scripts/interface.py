@@ -98,6 +98,10 @@ class Mouse:
     def get_pos(self):
         return self.controller.position
 
+    ## Left mouse down
+    def press_left_mouse(self):
+        self.controller.press()
+
 
 
 ## Object to manage a keyboard
@@ -304,14 +308,24 @@ class DeviceHandler:
         return self.keyboard.prev_key_down(key)
     
 
-    ## Presses the mouse down
+    ## Presses the left mouse button down
     def press_left_mouse(self):
         self.mouse.controller.press(mouse.Button.left)
 
 
-    ## Releases the mouse
+    ## Releases the left mouse button
     def release_left_mouse(self):
         self.mouse.controller.release(mouse.Button.left)
+
+
+    ## Presses the right mouse button down
+    def press_right_mouse(self):
+        self.mouse.controller.press(mouse.Button.right)
+
+
+    ## Releases the right mouse button
+    def release_right_mouse(self):
+        self.mouse.controller.release(mouse.Button.right)
 
 
     ## Moves the mouse by the given ammount

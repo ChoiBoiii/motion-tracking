@@ -146,9 +146,11 @@ def main():
         if gestures.is_pinching_middle():
             if not gestures.was_pinching_middle():
                 print("Pinch   | Middle")
+                deviceHandler.press_right_mouse()
         else:
             if gestures.was_pinching_middle():
                 print("Unpinch | Middle")
+                deviceHandler.release_right_mouse()
 
         if gestures.is_pinching_ring():
             if not gestures.was_pinching_ring():
