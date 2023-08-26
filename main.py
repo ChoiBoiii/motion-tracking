@@ -11,6 +11,7 @@ from Scripts.overlay import Overlay
 
 ## MAIN CONFIG ## 
 RIGHT_HAND_DOMINANT = True         # Whether to use dominant controls on right hand
+SCROLL_SPEED = 100                 # The multiplier applied to scrolling speed
 CAM_INDEX = 0                      # The index of the camera to get input from
 IMAGE_REDUCTION_SCALE = 0.25       # new_size = n * size
 MAX_INPUT_THRESHOLD_X = 0.8        # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
@@ -127,7 +128,10 @@ def main():
         
         ## Offhand controls - Mouse scroll
         if offhandGestues.is_pinching_index():
-            currPos = offhandGestues.centerPalm
+            dx = (offhandGestues.centerPalm[0] - offhandGestues.prevCenterPalm[0]) * SCROLL_SPEED
+            dy = (offhandGestues.centerPalm[1] - offhandGestues.prevCenterPalm[1]) * SCROLL_SPEED
+            print("SCROLL |", dx, dy)
+            deviceHandler.mouse.scroll(dx, dy)
 
         ## Move mouse
         if dominantHand:
