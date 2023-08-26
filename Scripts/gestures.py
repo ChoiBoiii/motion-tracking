@@ -33,6 +33,10 @@ class Gestures:
         self.__prevGestures[Gestures.PINCHING_PINKY] = False
         self.__gestures[Gestures.PINCHING_PINKY] = False
 
+        ## Add palm center coordinate
+        self.prevCenterPalm = None 
+        self.centerPalm = None
+
     ## Interface methods to get info from gesture object
     def is_pinching_index(self) -> bool:
         return self.__gestures[Gestures.PINCHING_INDEX]
@@ -107,6 +111,10 @@ class Gestures:
         self.__gestures[Gestures.PINCHING_MIDDLE] = self.__pinching_middle(handMesh)
         self.__gestures[Gestures.PINCHING_RING] = self.__pinching_ring(handMesh)
         self.__gestures[Gestures.PINCHING_PINKY] = self.__pinching_pinky(handMesh)
+
+        ## Cycle palm center - Average of all palm coordinates
+        self.prevCenterPalm = self.centerPalm
+        self.centerPalm = handMesh.get_palm_center()
 
 
 

@@ -41,9 +41,9 @@ def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: t
 
 
 ## Moves the mouse using the given hand
-def move_hand(deviceHandler: interface, hand: hands.HandMesh, monitorDimensions: tuple[int, int]) -> None:
+def move_hand(deviceHandler: interface, handGesdtures: Gestures, monitorDimensions: tuple[int, int]) -> None:
         currPos = deviceHandler.get_mouse_pos()
-        destPos = hand_coord_to_monitor_coord(hand.get_palm_center(), monitorDimensions)
+        destPos = hand_coord_to_monitor_coord(handGesdtures.centerPalm, monitorDimensions)
         dx = destPos[0] - currPos[0]
         dy = destPos[1] - currPos[1]
         deviceHandler.move_mouse(dx, dy)
@@ -127,11 +127,11 @@ def main():
         
         ## Offhand controls - Mouse scroll
         if offhandGestues.is_pinching_index():
-            currPos = offHand.get_palm_center()
+            currPos = offhandGestues.centerPalm
 
         ## Move mouse
         if dominantHand:
-            move_hand(deviceHandler, dominantHand, MONITOR_DIMENSIONS)
+            move_hand(deviceHandler, dominantGestures, MONITOR_DIMENSIONS)
 
         ## Toggle image capture preview
         if deviceHandler.key_down(TOGGLE_OVERLAY_KEY) and not deviceHandler.prev_key_down(TOGGLE_OVERLAY_KEY):
