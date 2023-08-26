@@ -1,11 +1,22 @@
+from typing import Union
+from .formatting import Image, ImgFormat
+
+
 ## Enum for type of hand
 class HandType:
     NONE = 0
     LEFT = 1
     RIGHT = 2
 
+
 ## Universal struct for any hand type
 class HandMesh:
+
+    ## The function used to extract hands from a frame
+    __hand_extraction_function = None
+    @staticmethod
+    def set_hands_extraction_function(function) -> None:
+        HandMesh.__hand_extraction_function = function
 
     ## Init instance
     def __init__(self, allKeypoints: list[float, float, float], 
@@ -43,6 +54,24 @@ class HandMesh:
             keyPoints.append((landmark.x, landmark.y, landmark.z))
         return HandMesh.create_from_point_list(keyPoints, handType=handType)
     
+    ## Extracts left and right hands from given frame
+    @staticmethod
+    def extract_hands_from_frame(frame: Image) -> tuple[Union['HandMesh', None], Union['HandMesh', None]]:
+        frame.convert_to(ImgFormat.RGB)
+        results = HandMesh.__hand_extraction_function.process(frame.img)
+        leftHand = None
+        rightHand = None
+        if results.multi_handedness:
+            for i, handedness in enumerate(results.multi_handedness):
+                handTypeStr = handedness.classification[0].label
+                if handTypeStr == 'Left':
+                    rightHand = HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, HandType.RIGHT)
+                elif handTypeStr == 'Right':
+                    leftHand = HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, HandType.LEFT)
+                else:
+                    print("WARNING: Encountered hand with invalid handedness during parsing.")
+        return leftHand, rightHand
+
     ## Returns the average position of all palm keypoints
     def get_palm_center(self) -> tuple[int, int, int]:
         rightSum = [sum(i) for i in zip(*self.palm)]

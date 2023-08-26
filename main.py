@@ -4,7 +4,6 @@ import pygame as py
 import mediapipe as mp
 from Scripts import window
 from Scripts import camera
-from Scripts import formatting
 from Scripts import hands
 from Scripts import interface 
 from Scripts.overlay import render_overlay
@@ -40,25 +39,6 @@ def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: t
     monitorX = monitorDimensions[0] * (1 - adjustedX)
     monitorY = monitorDimensions[1] * adjustedY
     return (monitorX, monitorY)
-
-
-## Processes the given frame, returning [leftHand, rightHand]
-def process_frame(handsFunction, frame: formatting.Image) -> tuple[hands.HandMesh, hands.HandMesh]: 
-    frame.convert_to(formatting.ImgFormat.RGB)
-    results = handsFunction.process(frame.img)
-    leftHand = None
-    rightHand = None
-    if results.multi_handedness:
-        for i, handedness in enumerate(results.multi_handedness):
-            handTypeStr = handedness.classification[0].label
-            if handTypeStr == 'Left':
-                rightHand = hands.HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, hands.HandType.RIGHT)
-            elif handTypeStr == 'Right':
-                leftHand = hands.HandMesh.create_from_mediapipe_hand_mesh(results.multi_hand_landmarks[i].landmark, hands.HandType.LEFT)
-            else:
-                print("WARNING: Encountered hand with invalid handedness during parsing.")
-    return leftHand,rightHand
-
 
 ## Moves the mouse using the given hand
 def move_hand(deviceHandler: interface, hand: hands.HandMesh, monitorDimensions: tuple[int, int]) -> None:
@@ -100,17 +80,18 @@ def main():
     if overlayActive:
         SCREEN = create_overlay()
 
-    ## Init input object for PyGame inputs
-    deviceHandler = interface.DeviceHandler(creationFlags=(interface.CREATE_MOUSE_CONTROLLER | interface.CREATE_KEYBOARD_LISTENER))
-
-    ## Abstract mediapipe functions
+    ## Attach mediapipe hands extraction function
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
-    mpHands = mp.solutions.hands.Hands(static_image_mode=False, max_num_hands=2, 
+    MP_HANDS = mp.solutions.hands.Hands(static_image_mode=False, max_num_hands=2, 
         min_detection_confidence=MIN_DETECTION_CONFIDENCE, min_tracking_confidence=MIN_TRACKING_CONFIDENCE)
+    hands.HandMesh.set_hands_extraction_function(MP_HANDS)
 
     ## Object to hold gesture info
     dominantGestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
     offhandGestues = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
+
+    ## Init input object for PyGame inputs
+    deviceHandler = interface.DeviceHandler(creationFlags=(interface.CREATE_MOUSE_CONTROLLER | interface.CREATE_KEYBOARD_LISTENER))
 
     ## Main loop
     run = True
@@ -126,7 +107,7 @@ def main():
         frame.scale(IMAGE_REDUCTION_SCALE)
 
         ## Process frame
-        leftHand, rightHand = process_frame(mpHands, frame)
+        leftHand, rightHand = hands.HandMesh.extract_hands_from_frame(frame)
           
         ## Extract the gestures from the right hand's hand mesh
         dominantHand = rightHand if RIGHT_HAND_DOMINANT else leftHand
