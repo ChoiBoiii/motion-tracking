@@ -267,8 +267,8 @@ class Keyboard:
 
 
 
-## Object to handle keyboard and mouse input
-class InputHandler:
+## Object to handle keyboard and mouse
+class DeviceHandler:
 
     ## Init
     def __init__(self, creationFlags: int=CREATE_ALL):

@@ -92,7 +92,7 @@ def main():
         SCREEN = create_overlay()
 
     ## Init input object for PyGame inputs
-    inputHandler = interface.InputHandler(creationFlags=(interface.CREATE_MOUSE_CONTROLLER | interface.CREATE_KEYBOARD_LISTENER))
+    deviceHandler = interface.DeviceHandler(creationFlags=(interface.CREATE_MOUSE_CONTROLLER | interface.CREATE_KEYBOARD_LISTENER))
 
     ## Abstract mediapipe functions
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
@@ -107,7 +107,7 @@ def main():
     while run:
         
         ## Get input
-        inputHandler.cycle()
+        deviceHandler.cycle()
 
         ## Get input from cam 
         frame = cam.get_frame()
@@ -126,11 +126,11 @@ def main():
         if gestures.is_pinching_index():
             if not gestures.was_pinching_index():
                 print("Pinch   | Index")
-                inputHandler.press_left_mouse()
+                deviceHandler.press_left_mouse()
         else:
             if gestures.was_pinching_index():
                 print("Unpinch | Index")
-                inputHandler.release_left_mouse()
+                deviceHandler.release_left_mouse()
 
         if gestures.is_pinching_middle():
             if not gestures.was_pinching_middle():
@@ -155,15 +155,14 @@ def main():
         
         ## Move mouse
         if dominantHand:
-            currPos = inputHandler.get_mouse_pos()
+            currPos = deviceHandler.get_mouse_pos()
             destPos = hand_coord_to_monitor_coord(dominantHand.get_palm_center(), MONITOR_DIMENSIONS)
             dx = destPos[0] - currPos[0]
             dy = destPos[1] - currPos[1]
-            inputHandler.move_mouse(dx, dy)
-        
-        ## Toggle image capture preview
+            deviceHandler.move_mouse(dx, dy)
 
-        if inputHandler.key_down(TOGGLE_OVERLAY_KEY) and not inputHandler.prev_key_down(TOGGLE_OVERLAY_KEY):
+        ## Toggle image capture preview
+        if deviceHandler.key_down(TOGGLE_OVERLAY_KEY) and not deviceHandler.prev_key_down(TOGGLE_OVERLAY_KEY):
             print("Toggling overlay")
             overlayActive = not overlayActive
             if overlayActive:
@@ -176,7 +175,7 @@ def main():
                         run = False
 
         ## Exit if escape key pressed
-        if inputHandler.key_down(QUIT_PROGRAM_KEY):
+        if deviceHandler.key_down(QUIT_PROGRAM_KEY):
             run = False
         
         ## Render image capture
@@ -203,7 +202,7 @@ def main():
     cam.deinit()
 
     ## Deinitialise and destroy controllers and handlers
-    inputHandler.deinit()
+    deviceHandler.deinit()
 
 
 ## RUN
