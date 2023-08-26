@@ -18,6 +18,8 @@ MAX_INPUT_THRESHOLD_X = 0.8        # The ratio of frameDimensions:windowDimensio
 MAX_INPUT_THRESHOLD_Y = 0.7        # The ratio of frameDimensions:windowDimensions at which mouse y coord is maxed to edges
 PINCH_DIST_INIT_THRESHOLD = 0.05   # The distance threshold at which a pinch gesture is initiated
 PINCH_DISH_EXIT_THRESHOLD = 0.1    # The distance threshold at which a pinch gesture is exited
+MIN_DETECTION_CONFIDENCE = 0.3     # The min confidence before detecting a hand
+MIN_TRACKING_CONFIDENCE = 0.3      # The min confidence before tracking
 WINDOW_NAME = 'Motion Capture'     # The title of the PyGame window
 WINDOW_FLAGS = 0                   # The flags to create the PyGame window with
 MAX_FPS = 60                       # The FPS cap of the main loop
@@ -26,6 +28,7 @@ MAX_FPS = 60                       # The FPS cap of the main loop
 ## Keyboard hotkeying
 TOGGLE_OVERLAY_KEY = pynput.keyboard.KeyCode.from_char('t') # Key to toggle the overlay
 QUIT_PROGRAM_KEY   = pynput.keyboard.Key.esc                # Key to quit the program when pressed
+
 
 ## Convert hand coord to monitor coord
 def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: tuple[int, int]) -> tuple[int, int]:
@@ -36,7 +39,6 @@ def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: t
     monitorX = monitorDimensions[0] * (1 - adjustedX)
     monitorY = monitorDimensions[1] * adjustedY
     return (monitorX, monitorY)
-
 
 
 ## Processes the given frame, returning [leftHand, rightHand]
@@ -55,7 +57,6 @@ def process_frame(handsFunction, frame: formatting.Image) -> tuple[hands.HandMes
             else:
                 print("WARNING: Encountered hand with invalid handedness during parsing.")
     return leftHand,rightHand
-
 
 
 ## MAIN
@@ -95,8 +96,8 @@ def main():
 
     ## Abstract mediapipe functions
     # https://github.com/google/mediapipe/blob/master/docs/solutions/hands.md
-    mpHands = mp.solutions.hands.Hands(static_image_mode=False, 
-        max_num_hands=2, min_detection_confidence=0.5, min_tracking_confidence=0.5)
+    mpHands = mp.solutions.hands.Hands(static_image_mode=False, max_num_hands=2, 
+        min_detection_confidence=MIN_DETECTION_CONFIDENCE, min_tracking_confidence=MIN_TRACKING_CONFIDENCE)
 
     ## Object to hold gesture info
     gestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
