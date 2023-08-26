@@ -31,6 +31,17 @@ QUIT_PROGRAM_KEY   = pynput.keyboard.Key.esc                # Key to quit the pr
 
 
 ## Convert hand coord to monitor coord
+def old_hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: tuple[int, int]) -> tuple[int, int]:
+    avgX = handCoord[0]
+    avgY = handCoord[1]
+    adjustedX = 0.5 + (1 / MAX_INPUT_THRESHOLD_X * (avgX - 0.5))
+    adjustedY = 0.5 + (1 / MAX_INPUT_THRESHOLD_Y * (avgY - 0.5))
+    monitorX = monitorDimensions[0] * (1 - adjustedX)
+    monitorY = monitorDimensions[1] * adjustedY
+    return (monitorX, monitorY)
+
+
+## Convert hand coord to monitor coord
 def hand_coord_to_monitor_coord(handCoord: tuple[int, int], monitorDimensions: tuple[int, int]) -> tuple[int, int]:
     avgX = handCoord[0]
     avgY = handCoord[1]
