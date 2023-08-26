@@ -12,7 +12,7 @@ from Scripts.gestures import Gestures
 
 
 ## MAIN CONFIG ## 
-RIGHT_HAND_DOMINANT = False        # Whether to use dominant controls on right hand
+RIGHT_HAND_DOMINANT = True         # Whether to use dominant controls on right hand
 CAM_INDEX = 0                      # The index of the camera to get input from
 IMAGE_REDUCTION_SCALE = 0.25       # new_size = n * size
 MAX_INPUT_THRESHOLD_X = 0.8        # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
@@ -59,6 +59,14 @@ def process_frame(handsFunction, frame: formatting.Image) -> tuple[hands.HandMes
                 print("WARNING: Encountered hand with invalid handedness during parsing.")
     return leftHand,rightHand
 
+
+## Moves the mouse using the given hand
+def move_hand(deviceHandler: interface, hand: hands.HandMesh, monitorDimensions: tuple[int, int]) -> None:
+        currPos = deviceHandler.get_mouse_pos()
+        destPos = hand_coord_to_monitor_coord(hand.get_palm_center(), monitorDimensions)
+        dx = destPos[0] - currPos[0]
+        dy = destPos[1] - currPos[1]
+        deviceHandler.move_mouse(dx, dy)
 
 ## MAIN
 def main():
@@ -142,15 +150,12 @@ def main():
             deviceHandler.release_right_mouse()
         
         ## Offhand controls - Mouse scroll
-
+        if offhandGestues.is_pinching_index():
+            currPos = offHand.get_palm_center()
 
         ## Move mouse
         if dominantHand:
-            currPos = deviceHandler.get_mouse_pos()
-            destPos = hand_coord_to_monitor_coord(dominantHand.get_palm_center(), MONITOR_DIMENSIONS)
-            dx = destPos[0] - currPos[0]
-            dy = destPos[1] - currPos[1]
-            deviceHandler.move_mouse(dx, dy)
+            move_hand(deviceHandler, dominantHand, MONITOR_DIMENSIONS)
 
         ## Toggle image capture preview
         if deviceHandler.key_down(TOGGLE_OVERLAY_KEY) and not deviceHandler.prev_key_down(TOGGLE_OVERLAY_KEY):

@@ -50,7 +50,3 @@ class HandMesh:
         avgY = rightSum[1] / len(self.palm)
         avgZ = rightSum[2] / len(self.palm)
         return (avgX, avgY, avgZ)
-
-
-## Extract hand meshes from given image
-# def get_hand_meshes_from_image() -> List[]

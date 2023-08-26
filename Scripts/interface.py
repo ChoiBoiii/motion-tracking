@@ -98,10 +98,9 @@ class Mouse:
     def get_pos(self):
         return self.controller.position
 
-    ## Left mouse down
-    def press_left_mouse(self):
-        self.controller.press()
-
+    ## Scroll
+    def scroll(self, dx: int, dy: int):
+        self.controller.scroll(dx, dy)
 
 
 ## Object to manage a keyboard
