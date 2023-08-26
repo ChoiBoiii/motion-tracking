@@ -100,7 +100,6 @@ class Mouse:
 
     ## Scroll
     def scroll(self, dx: int, dy: int):
-        print(dx, dy)
         self.controller.scroll(dx, dy)
 
 
