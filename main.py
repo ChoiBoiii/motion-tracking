@@ -12,6 +12,7 @@ from Scripts.gestures import Gestures
 
 
 ## MAIN CONFIG ## 
+RIGHT_HAND_DOMINANT = False        # Whether to use dominant controls on right hand
 CAM_INDEX = 0                      # The index of the camera to get input from
 IMAGE_REDUCTION_SCALE = 0.25       # new_size = n * size
 MAX_INPUT_THRESHOLD_X = 0.8        # The ratio of frameDimensions:windowDimensions at which mouse x coord is maxed to edges
@@ -100,7 +101,8 @@ def main():
         min_detection_confidence=MIN_DETECTION_CONFIDENCE, min_tracking_confidence=MIN_TRACKING_CONFIDENCE)
 
     ## Object to hold gesture info
-    gestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
+    dominantGestures = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
+    offhandGestues = Gestures(PINCH_DIST_INIT_THRESHOLD, PINCH_DISH_EXIT_THRESHOLD)
 
     ## Main loop
     run = True
@@ -119,42 +121,29 @@ def main():
         leftHand, rightHand = process_frame(mpHands, frame)
           
         ## Extract the gestures from the right hand's hand mesh
-        dominantHand = rightHand
-        gestures.extract_gestrues(dominantHand)
+        dominantHand = rightHand if RIGHT_HAND_DOMINANT else leftHand
+        offHand = leftHand if RIGHT_HAND_DOMINANT else rightHand
+        dominantGestures.extract_gestrues(dominantHand)
+        offhandGestues.extract_gestrues(offHand)
 
-        ## Toggle clicks
-        if gestures.is_pinching_index():
-            if not gestures.was_pinching_index():
-                print("Pinch   | Index")
-                deviceHandler.press_left_mouse()
-        else:
-            if gestures.was_pinching_index():
-                print("Unpinch | Index")
-                deviceHandler.release_left_mouse()
+        ## Dominant controls - Mouse clicks
+        if dominantGestures.index_pinch_initiated():
+            print("Pinch   | Index")
+            deviceHandler.press_left_mouse()
+        elif dominantGestures.index_pinch_exited():
+            print("Unpinch | Index")
+            deviceHandler.release_left_mouse()
 
-        if gestures.is_pinching_middle():
-            if not gestures.was_pinching_middle():
-                print("Pinch   | Middle")
-                deviceHandler.press_right_mouse()
-        else:
-            if gestures.was_pinching_middle():
-                print("Unpinch | Middle")
-                deviceHandler.release_right_mouse()
-
-        if gestures.is_pinching_ring():
-            if not gestures.was_pinching_ring():
-                pass
-        else:
-            if gestures.was_pinching_ring():
-                pass
-
-        if gestures.is_pinching_pinky():
-            if not gestures.was_pinching_pinky():
-                pass
-        else:
-            if gestures.was_pinching_pinky():
-                pass
+        if dominantGestures.middle_pinch_initiated():
+            print("Pinch   | Middle")
+            deviceHandler.press_right_mouse()
+        elif dominantGestures.middle_pinch_exited():
+            print("Unpinch | Middle")
+            deviceHandler.release_right_mouse()
         
+        ## Offhand controls - Mouse scroll
+
+
         ## Move mouse
         if dominantHand:
             currPos = deviceHandler.get_mouse_pos()
@@ -184,7 +173,7 @@ def main():
         if overlayActive:
 
             ## Render and add the preview overlay to the screen display surface
-            render_overlay(SCREEN, frame, [leftHand, rightHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
+            render_overlay(SCREEN, frame, [offHand, dominantHand], MAX_INPUT_THRESHOLD_X, MAX_INPUT_THRESHOLD_Y)
 
             ## Update display (make changes take effect)
             py.display.update()

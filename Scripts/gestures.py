@@ -58,6 +58,18 @@ class Gestures:
     def was_pinching_pinky(self) -> bool:
         return self.__prevGestures[Gestures.PINCHING_PINKY]
     
+    def index_pinch_initiated(self) -> bool:
+        return self.is_pinching_index() and not self.was_pinching_index()
+
+    def index_pinch_exited(self) -> bool:
+        return self.was_pinching_index() and not self.is_pinching_index()
+
+    def middle_pinch_initiated(self) -> bool:
+        return self.is_pinching_middle() and not self.was_pinching_middle()
+
+    def middle_pinch_exited(self) -> bool:
+        return self.was_pinching_middle() and not self.is_pinching_middle()
+    
     ## Gesture extraction helpers
     def __pinching_index(self, handMesh: HandMesh) -> bool:
         dist = get_dist_3D(handMesh.index[-1], handMesh.thumb[-1])
