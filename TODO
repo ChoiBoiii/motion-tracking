@@ -1,2 +1,0 @@
-Mosue scroll events get clipped from float to int, thus dropping small movement events.
-Keep track of total required scroll in current scroll session, compare actual to required and add if required
