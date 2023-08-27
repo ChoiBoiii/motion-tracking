@@ -113,17 +113,17 @@ def main():
 
         ## Dominant controls - Mouse clicks
         if dominantGestures.index_pinch_initiated():
-            print("Pinch   | Index")
+            print("Pinch   | R Index")
             deviceHandler.press_left_mouse()
         elif dominantGestures.index_pinch_exited():
-            print("Unpinch | Index")
+            print("Unpinch | R Index")
             deviceHandler.release_left_mouse()
 
         if dominantGestures.middle_pinch_initiated():
-            print("Pinch   | Middle")
+            print("Pinch   | R Middle")
             deviceHandler.press_right_mouse()
         elif dominantGestures.middle_pinch_exited():
-            print("Unpinch | Middle")
+            print("Unpinch | R Middle")
             deviceHandler.release_right_mouse()
         
         ## Offhand controls - Mouse scroll
@@ -132,6 +132,10 @@ def main():
                 dx = (offhandGestues.centerPalm[0] - offhandGestues.prevCenterPalm[0]) * SCROLL_SPEED
                 dy = (offhandGestues.centerPalm[1] - offhandGestues.prevCenterPalm[1]) * SCROLL_SPEED
                 deviceHandler.scroll(dx, dy)
+                print(f"Scroll [{dx}, {dy}]")
+        else:
+            deviceHandler.end_scroll_session()
+            offhandGestues.centerPalm = None
 
         ## Move mouse
         if dominantHand:
