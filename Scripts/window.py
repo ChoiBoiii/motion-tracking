@@ -17,3 +17,6 @@ def destroy_window() -> None:
 
     # Reinits py.display to prevent crashing when trying to access input
     py.display.init()
+
+
+    
