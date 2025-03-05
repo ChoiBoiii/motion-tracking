@@ -2,11 +2,11 @@
 import pynput
 import pygame as py
 import mediapipe as mp
-from Scripts import camera
-from Scripts import hands
-from Scripts import devices 
-from Scripts.gestures import Gestures
-from Scripts.overlay import Overlay
+from scripts import camera
+from scripts import hands
+from scripts import devices 
+from scripts.gestures import Gestures
+from scripts.overlay import Overlay
 
 
 ## MAIN CONFIG ## 
